@@ -31,7 +31,7 @@ Skeleton* Skeleton::createFromFile(std::string fileName) {
 }
 
 
-void drawBone(Skeleton *child) 
+void drawBone(Skeleton *child)
 {
 	qglviewer::Vec v0(0,0,1);
 	qglviewer::Vec v1(child->_offX, child->_offY, child->_offZ);
@@ -45,7 +45,7 @@ void drawBone(Skeleton *child)
 		gluCylinder(gluNewQuadric(), 0.1, 0.1, height, 5, 5);
 	}
 	glPopMatrix();
-	
+
 }
 
 void Skeleton::rotateSkeleton() {
@@ -82,7 +82,7 @@ void Skeleton::rotateSkeleton() {
 			break;
 	}
 }
-void Skeleton::draw() 
+void Skeleton::draw()
 {
 	glPushMatrix();
 	{
@@ -93,7 +93,7 @@ void Skeleton::draw()
 		rotateSkeleton();
 		// Draw articulation :
 		glColor3f(1,0,0),
-		gluSphere(gluNewQuadric(), 0.25, 10, 10);
+			gluSphere(gluNewQuadric(), 0.25, 10, 10);
 		// Draw bone and children :
 		glColor3f(0,0,1);
 		for (unsigned int ichild = 0 ; ichild < _children.size() ; ichild++) {
@@ -104,7 +104,7 @@ void Skeleton::draw()
 	glPopMatrix();
 }
 
-void Skeleton::animate(int iframe) 
+void Skeleton::animate(int iframe)
 {
 	// Update dofs :
 	_curTx = 0; _curTy = 0; _curTz = 0;
@@ -125,41 +125,41 @@ void Skeleton::animate(int iframe)
 
 void Skeleton::eulerToMatrix(double rx, double ry, double rz, int rorder, glm::mat3 *R)
 {
-  glm::mat3 mx(1, 0,       0,
-	       0, cos(rx), -sin(rx),
-	       0, sin(rx), cos(rx));
+	glm::mat3 mx(1, 0,       0,
+			0, cos(rx), -sin(rx),
+			0, sin(rx), cos(rx));
 
-  glm::mat3 my(cos(ry),  0, sin(ry),
-	       0,        1, 0,
-	       -sin(ry), 0, cos(ry));
+	glm::mat3 my(cos(ry),  0, sin(ry),
+			0,        1, 0,
+			-sin(ry), 0, cos(ry));
 
-  glm::mat3 mz(cos(rz),  -sin(ry), 0,
-	       sin(rz),  cos(rz),  0,
-	       0,        0,        1);
+	glm::mat3 mz(cos(rz),  -sin(ry), 0,
+			sin(rz),  cos(rz),  0,
+			0,        0,        1);
 
-  switch (rorder) {
-  case roZYX :
-    *R = mx*my*mz;
-    break;
-  case roXZY :
-    *R = my*mz*mx;
-    break;
-  case roYXZ :
-    *R = mz*mx*my;
-    break;
-  case roYZX :
-    *R = mx*mz*my;
-    break;
-  case roZXY :
-    *R = my*mx*mz;
-    break;
-  case roXYZ :
-    *R = mz*my*mx;
-    break;
-  default :
-    *R = mx*my*mz;
-  }
-  
+	switch (rorder) {
+		case roZYX :
+			*R = mx*my*mz;
+			break;
+		case roXZY :
+			*R = my*mz*mx;
+			break;
+		case roYXZ :
+			*R = mz*mx*my;
+			break;
+		case roYZX :
+			*R = mx*mz*my;
+			break;
+		case roZXY :
+			*R = my*mx*mz;
+			break;
+		case roXYZ :
+			*R = mz*my*mx;
+			break;
+		default :
+			*R = mx*my*mz;
+	}
+
 }
 
 inline float SIGN(float x) {return (x >= 0.0f) ? +1.0f : -1.0f;}
@@ -167,60 +167,60 @@ inline float NORM(float a, float b, float c, float d) {return sqrt(a * a + b * b
 
 void Skeleton::matrixToQuaternion(glm::mat3 R, qglviewer::Quaternion *q)
 {
-  
-  (*q)[0] = ( R[1][1] + R[2][2] + R[3][3] + 1.0f) / 4.0f;
-  (*q)[1] = ( R[1][1] - R[2][2] - R[3][3] + 1.0f) / 4.0f;
-  (*q)[2] = (-R[1][1] + R[2][2] - R[3][3] + 1.0f) / 4.0f;
-  (*q)[3] = (-R[1][1] - R[2][2] + R[3][3] + 1.0f) / 4.0f;
 
-  if((*q)[0] < 0.0f) (*q)[0] = 0.0f;
-  if((*q)[1] < 0.0f) (*q)[1] = 0.0f;
-  if((*q)[2] < 0.0f) (*q)[2] = 0.0f;
-  if((*q)[3] < 0.0f) (*q)[3] = 0.0f;
+	(*q)[0] = ( R[1][1] + R[2][2] + R[3][3] + 1.0f) / 4.0f;
+	(*q)[1] = ( R[1][1] - R[2][2] - R[3][3] + 1.0f) / 4.0f;
+	(*q)[2] = (-R[1][1] + R[2][2] - R[3][3] + 1.0f) / 4.0f;
+	(*q)[3] = (-R[1][1] - R[2][2] + R[3][3] + 1.0f) / 4.0f;
 
-  (*q)[0] = sqrt((*q)[0]);
-  (*q)[1] = sqrt((*q)[1]);
-  (*q)[2] = sqrt((*q)[2]);
-  (*q)[3] = sqrt((*q)[3]);
+	if((*q)[0] < 0.0f) (*q)[0] = 0.0f;
+	if((*q)[1] < 0.0f) (*q)[1] = 0.0f;
+	if((*q)[2] < 0.0f) (*q)[2] = 0.0f;
+	if((*q)[3] < 0.0f) (*q)[3] = 0.0f;
 
-  if((*q)[0] >= (*q)[1] && (*q)[0] >= (*q)[2] && (*q)[0] >= (*q)[3]) {
-    (*q)[0] *= +1.0f;
-    (*q)[1] *= SIGN(R[3][2] - R[2][3]);
-    (*q)[2] *= SIGN(R[1][3] - R[3][1]);
-    (*q)[3] *= SIGN(R[2][1] - R[1][2]);
+	(*q)[0] = sqrt((*q)[0]);
+	(*q)[1] = sqrt((*q)[1]);
+	(*q)[2] = sqrt((*q)[2]);
+	(*q)[3] = sqrt((*q)[3]);
 
-  } else if((*q)[1] >= (*q)[0] && (*q)[1] >= (*q)[2] && (*q)[1] >= (*q)[3]) {
-    (*q)[0] *= SIGN(R[3][2] - R[2][3]);
-    (*q)[1] *= +1.0f;
-    (*q)[2] *= SIGN(R[2][1] + R[1][2]);
-    (*q)[3] *= SIGN(R[1][3] + R[3][1]);
+	if((*q)[0] >= (*q)[1] && (*q)[0] >= (*q)[2] && (*q)[0] >= (*q)[3]) {
+		(*q)[0] *= +1.0f;
+		(*q)[1] *= SIGN(R[3][2] - R[2][3]);
+		(*q)[2] *= SIGN(R[1][3] - R[3][1]);
+		(*q)[3] *= SIGN(R[2][1] - R[1][2]);
 
-  } else if((*q)[2] >= (*q)[0] && (*q)[2] >= (*q)[1] && (*q)[2] >= (*q)[3]) {
-    (*q)[0] *= SIGN(R[1][3] - R[3][1]);
-    (*q)[1] *= SIGN(R[2][1] + R[1][2]);
-    (*q)[2] *= +1.0f;
-    (*q)[3] *= SIGN(R[3][2] + R[2][3]);
+	} else if((*q)[1] >= (*q)[0] && (*q)[1] >= (*q)[2] && (*q)[1] >= (*q)[3]) {
+		(*q)[0] *= SIGN(R[3][2] - R[2][3]);
+		(*q)[1] *= +1.0f;
+		(*q)[2] *= SIGN(R[2][1] + R[1][2]);
+		(*q)[3] *= SIGN(R[1][3] + R[3][1]);
 
-  } else if((*q)[3] >= (*q)[0] && (*q)[3] >= (*q)[1] && (*q)[3] >= (*q)[2]) {
-    (*q)[0] *= SIGN(R[2][1] - R[1][2]);
-    (*q)[1] *= SIGN(R[3][1] + R[1][3]);
-    (*q)[2] *= SIGN(R[3][2] + R[2][3]);
-    (*q)[3] *= +1.0f;
+	} else if((*q)[2] >= (*q)[0] && (*q)[2] >= (*q)[1] && (*q)[2] >= (*q)[3]) {
+		(*q)[0] *= SIGN(R[1][3] - R[3][1]);
+		(*q)[1] *= SIGN(R[2][1] + R[1][2]);
+		(*q)[2] *= +1.0f;
+		(*q)[3] *= SIGN(R[3][2] + R[2][3]);
 
-  } else {
-    std::cerr << "coding error\n" << std::endl;
-  }
+	} else if((*q)[3] >= (*q)[0] && (*q)[3] >= (*q)[1] && (*q)[3] >= (*q)[2]) {
+		(*q)[0] *= SIGN(R[2][1] - R[1][2]);
+		(*q)[1] *= SIGN(R[3][1] + R[1][3]);
+		(*q)[2] *= SIGN(R[3][2] + R[2][3]);
+		(*q)[3] *= +1.0f;
 
-  float r = NORM((*q)[0], (*q)[1], (*q)[2], (*q)[3]);
-  (*q)[0] /= r;
-  (*q)[1] /= r;
-  (*q)[2] /= r;
-  (*q)[3] /= r;
-  
+	} else {
+		std::cerr << "coding error\n" << std::endl;
+	}
+
+	float r = NORM((*q)[0], (*q)[1], (*q)[2], (*q)[3]);
+	(*q)[0] /= r;
+	(*q)[1] /= r;
+	(*q)[2] /= r;
+	(*q)[3] /= r;
+
 }
 void Skeleton::quaternionToAxisAngle(qglviewer::Quaternion q, qglviewer::Vec *vaa)
 {
-	
+
 }
 void Skeleton::eulerToAxisAngle(double rx, double ry, double rz, int rorder, qglviewer::Vec *vaa)
 {
@@ -244,7 +244,7 @@ void Skeleton::nbDofs() {
 	// TO COMPLETE :
 	int isImplemented = 0;
 
-	
+
 	if (!isImplemented) return;
 	cout << _name << " : " << nbDofsR << " degree(s) of freedom in rotation\n";
 
