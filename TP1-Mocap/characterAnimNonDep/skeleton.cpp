@@ -168,10 +168,10 @@ inline float NORM(float a, float b, float c, float d) {return sqrt(a * a + b * b
 void Skeleton::matrixToQuaternion(glm::mat3 R, qglviewer::Quaternion *q)
 {
   
-  q0 = ( r11 + r22 + r33 + 1.0f) / 4.0f;
-  q1 = ( r11 - r22 - r33 + 1.0f) / 4.0f;
-  q2 = (-r11 + r22 - r33 + 1.0f) / 4.0f;
-  q3 = (-r11 - r22 + r33 + 1.0f) / 4.0f;
+  float q0 = ( R[1][1] + R[2][2] + R[3][3] + 1.0f) / 4.0f;
+  float q1 = ( R[1][1] - R[2][2] - R[3][3] + 1.0f) / 4.0f;
+  float q2 = (-R[1][1] + R[2][2] - R[3][3] + 1.0f) / 4.0f;
+  float q3 = (-R[1][1] - R[2][2] + R[3][3] + 1.0f) / 4.0f;
 
   if(q0 < 0.0f) q0 = 0.0f;
   if(q1 < 0.0f) q1 = 0.0f;
@@ -185,33 +185,33 @@ void Skeleton::matrixToQuaternion(glm::mat3 R, qglviewer::Quaternion *q)
 
   if(q0 >= q1 && q0 >= q2 && q0 >= q3) {
     q0 *= +1.0f;
-    q1 *= SIGN(r32 - r23);
-    q2 *= SIGN(r13 - r31);
-    q3 *= SIGN(r21 - r12);
+    q1 *= SIGN(R[3][2] - R[2][3]);
+    q2 *= SIGN(R[1][3] - R[3][1]);
+    q3 *= SIGN(R[2][1] - R[1][2]);
 
   } else if(q1 >= q0 && q1 >= q2 && q1 >= q3) {
-    q0 *= SIGN(r32 - r23);
+    q0 *= SIGN(R[3][2] - R[2][3]);
     q1 *= +1.0f;
-    q2 *= SIGN(r21 + r12);
-    q3 *= SIGN(r13 + r31);
+    q2 *= SIGN(R[2][1] + R[1][2]);
+    q3 *= SIGN(R[1][3] + R[3][1]);
 
   } else if(q2 >= q0 && q2 >= q1 && q2 >= q3) {
-    q0 *= SIGN(r13 - r31);
-    q1 *= SIGN(r21 + r12);
+    q0 *= SIGN(R[1][3] - R[3][1]);
+    q1 *= SIGN(R[2][1] + R[1][2]);
     q2 *= +1.0f;
-    q3 *= SIGN(r32 + r23);
+    q3 *= SIGN(R[3][2] + R[2][3]);
 
   } else if(q3 >= q0 && q3 >= q1 && q3 >= q2) {
-    q0 *= SIGN(r21 - r12);
-    q1 *= SIGN(r31 + r13);
-    q2 *= SIGN(r32 + r23);
+    q0 *= SIGN(R[2][1] - R[1][2]);
+    q1 *= SIGN(R[3][1] + R[1][3]);
+    q2 *= SIGN(R[3][2] + R[2][3]);
     q3 *= +1.0f;
 
   } else {
     std::cerr << "coding error\n" << std::endl;
   }
 
-  r = NORM(q0, q1, q2, q3);
+  float r = NORM(q0, q1, q2, q3);
   q0 /= r;
   q1 /= r;
   q2 /= r;
