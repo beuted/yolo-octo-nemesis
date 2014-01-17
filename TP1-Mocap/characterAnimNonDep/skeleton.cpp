@@ -167,11 +167,11 @@ inline float NORM(float a, float b, float c, float d) {return sqrt(a * a + b * b
 
 void Skeleton::matrixToQuaternion(glm::mat3 R, qglviewer::Quaternion *q)
 {
-
-	(*q)[0] = ( R[1][1] + R[2][2] + R[3][3] + 1.0f) / 4.0f;
-	(*q)[1] = ( R[1][1] - R[2][2] - R[3][3] + 1.0f) / 4.0f;
-	(*q)[2] = (-R[1][1] + R[2][2] - R[3][3] + 1.0f) / 4.0f;
-	(*q)[3] = (-R[1][1] - R[2][2] + R[3][3] + 1.0f) / 4.0f;
+  R[1][1];
+	(*q)[0] = ( R[0][0] + R[1][1] + R[2][2] + 1.0f) / 4.0f;
+	(*q)[1] = ( R[0][0] - R[1][1] - R[2][2] + 1.0f) / 4.0f;
+	(*q)[2] = (-R[0][0] + R[1][1] - R[2][2] + 1.0f) / 4.0f;
+	(*q)[3] = (-R[0][0] - R[1][1] + R[2][2] + 1.0f) / 4.0f;
 
 	if((*q)[0] < 0.0f) (*q)[0] = 0.0f;
 	if((*q)[1] < 0.0f) (*q)[1] = 0.0f;
@@ -185,26 +185,26 @@ void Skeleton::matrixToQuaternion(glm::mat3 R, qglviewer::Quaternion *q)
 
 	if((*q)[0] >= (*q)[1] && (*q)[0] >= (*q)[2] && (*q)[0] >= (*q)[3]) {
 		(*q)[0] *= +1.0f;
-		(*q)[1] *= SIGN(R[3][2] - R[2][3]);
-		(*q)[2] *= SIGN(R[1][3] - R[3][1]);
-		(*q)[3] *= SIGN(R[2][1] - R[1][2]);
+		(*q)[1] *= SIGN(R[2][1] - R[1][2]);
+		(*q)[2] *= SIGN(R[0][2] - R[2][0]);
+		(*q)[3] *= SIGN(R[1][0] - R[0][1]);
 
 	} else if((*q)[1] >= (*q)[0] && (*q)[1] >= (*q)[2] && (*q)[1] >= (*q)[3]) {
-		(*q)[0] *= SIGN(R[3][2] - R[2][3]);
+		(*q)[0] *= SIGN(R[2][1] - R[1][2]);
 		(*q)[1] *= +1.0f;
-		(*q)[2] *= SIGN(R[2][1] + R[1][2]);
-		(*q)[3] *= SIGN(R[1][3] + R[3][1]);
+		(*q)[2] *= SIGN(R[1][0] + R[0][1]);
+		(*q)[3] *= SIGN(R[0][2] + R[2][0]);
 
 	} else if((*q)[2] >= (*q)[0] && (*q)[2] >= (*q)[1] && (*q)[2] >= (*q)[3]) {
-		(*q)[0] *= SIGN(R[1][3] - R[3][1]);
-		(*q)[1] *= SIGN(R[2][1] + R[1][2]);
+		(*q)[0] *= SIGN(R[0][2] - R[2][0]);
+		(*q)[1] *= SIGN(R[1][0] + R[0][1]);
 		(*q)[2] *= +1.0f;
-		(*q)[3] *= SIGN(R[3][2] + R[2][3]);
+		(*q)[3] *= SIGN(R[2][1] + R[1][2]);
 
 	} else if((*q)[3] >= (*q)[0] && (*q)[3] >= (*q)[1] && (*q)[3] >= (*q)[2]) {
-		(*q)[0] *= SIGN(R[2][1] - R[1][2]);
-		(*q)[1] *= SIGN(R[3][1] + R[1][3]);
-		(*q)[2] *= SIGN(R[3][2] + R[2][3]);
+		(*q)[0] *= SIGN(R[1][0] - R[0][1]);
+		(*q)[1] *= SIGN(R[2][0] + R[0][2]);
+		(*q)[2] *= SIGN(R[2][1] + R[1][2]);
 		(*q)[3] *= +1.0f;
 
 	} else {
@@ -218,10 +218,26 @@ void Skeleton::matrixToQuaternion(glm::mat3 R, qglviewer::Quaternion *q)
 	(*q)[3] /= r;
 
 }
+
 void Skeleton::quaternionToAxisAngle(qglviewer::Quaternion q, qglviewer::Vec *vaa)
 {
+   if (q[3] > 1) q.normalize(); // if w>1 acos and sqrt will produce errors, this cant happen if quaternion is normalised
+   float angle = 2 * acos(q[3]);
+   double s = sqrt(1-q[3]*q[3]); // assuming quaternion normalised then w is less than 1, so term always positive.
+   if (s < 0.001) { // test to avoid divide by zero, s is always positive due to sqrt
+     // if s close to zero then direction of axis not important
+     (*vaa)[0] = q[0]; // if it is important that axis is normalised then replace with x=1; y=z=0;
+     (*vaa)[1] = q[1];
+     (*vaa)[2] = q[2];
+   } else {
+     (*vaa)[0] = q[0] / s; // normalise axis
+     (*vaa)[1] = q[2] / s;
+     (*vaa)[2] = q[3] / s;
+   }
 
+   (*vaa) = angle*(*vaa);
 }
+
 void Skeleton::eulerToAxisAngle(double rx, double ry, double rz, int rorder, qglviewer::Vec *vaa)
 {
 	// Euler -> matrix :
@@ -242,10 +258,36 @@ void Skeleton::nbDofs() {
 	int nbDofsR = -1;
 
 	// TO COMPLETE :
-	int isImplemented = 0;
+	int isImplemented = 1;
 
+	// TEST ////////////////////
+	qglviewer::Vec *vaa = new qglviewer::Vec();
+	eulerToAxisAngle(90,90,0, roXYZ, vaa);
+	// TODO : pas sur que ca marche ce truc ...
+	std::cout << (*vaa)[0] << ", " << (*vaa)[1] << ", " << (*vaa)[2] << ", norm = " << (*vaa).norm() << std::endl;
+	////////////////////////////
+	if (vaa->norm() < 0.0001)
+	  nbDofsR = 0;
+	else {
+	  eulerToAxisAngle(_dofs[0]._values[0],_dofs[1]._values[0],_dofs[2]._values[0], roXYZ, vaa);
+	  //eulerToAxisAngle(this->_curRx,this->_curRy,this->_curRz, this->_rorder, vaa);
+	  for (int j = 0; j < _dofs[0]._values.size(); ++j) {
+	    qglviewer::Vec vaaPrec = (*vaa);
+	    eulerToAxisAngle(_dofs[0]._values[j],_dofs[1]._values[j],_dofs[2]._values[j], roXYZ, vaa);
+	    if ((*vaa)[0] != vaaPrec[0] || (*vaa)[1] != vaaPrec[1] ||  (*vaa)[2] != vaaPrec[2]) {
+	      nbDofsR = 2;
+	    }
+	  }
+	}
+	if (nbDofsR == -1)
+	  nbDofsR = 1;
 
 	if (!isImplemented) return;
+
+	if (nbDofsR == 2)
+	  	cout << _name << " : >2 degree(s) of freedom in rotation\n";
+
+	else
 	cout << _name << " : " << nbDofsR << " degree(s) of freedom in rotation\n";
 
 	// Propagate to children :
