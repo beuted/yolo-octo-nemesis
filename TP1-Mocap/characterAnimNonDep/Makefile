@@ -12,7 +12,7 @@ ALL_LIBS = -L/usr/lib64 -lQGLViewer -lQtXml -lQtOpenGL -lQtGui -lQtCore -lGLU -l
 ####
 # COMPILATION
 CC      = g++
-CFLAGS  = -W -Wall -ansi -pedantic $(ALL_HDRS) -I./include/ -I./include/QGLViewer/ -I./include/Qt/include/QtCore/ -I./include/Qt/include/QtXml/ -I./include/Qt/include/QtOpenGL/ -I./include/Qt/include/QtGui/
+CFLAGS  = -W -Wall -g -ansi -pedantic $(ALL_HDRS) -I./include/ -I./include/QGLViewer/ -I./include/Qt/include/QtCore/ -I./include/Qt/include/QtXml/ -I./include/Qt/include/QtOpenGL/ -I./include/Qt/include/QtGui/
 LDFLAGS = $(ALL_LIBS)
 
 EXEC = animation
