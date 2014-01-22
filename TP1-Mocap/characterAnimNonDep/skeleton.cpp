@@ -274,7 +274,9 @@ void Skeleton::nbDofs() {
 	  for (int j = 0; j < _dofs[0]._values.size(); ++j) {
 	    qglviewer::Vec vaaPrec = (*vaa);
 	    eulerToAxisAngle(_dofs[0]._values[j],_dofs[1]._values[j],_dofs[2]._values[j], roXYZ, vaa);
-	    if ((*vaa)[0] != vaaPrec[0] || (*vaa)[1] != vaaPrec[1] ||  (*vaa)[2] != vaaPrec[2]) {
+	    if (abs((*vaa)[0] - vaaPrec[0]) >= tol ||
+		abs((*vaa)[1] - vaaPrec[1]) >= tol ||
+		abs((*vaa)[2] - vaaPrec[2]) >= tol) {
 	      nbDofsR = 2;
 	    }
 	  }
