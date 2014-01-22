@@ -43,7 +43,7 @@ void Mesh::load(const char* fileName) {
 	_triangles.clear();
 	_nbEdges = 0;
 
-	FILE *fdat; fopen_r_dosunix(&fdat, fileName, "r");
+	FILE *fdat; fopen_r_dosunix(fdat, fileName, "r");
 	
 	char line[300];
 	char *next_token;

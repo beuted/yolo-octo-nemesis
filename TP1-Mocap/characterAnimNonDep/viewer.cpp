@@ -237,7 +237,7 @@ void Viewer::init()
   _skinning->_skin = _human;
   _skinning->_skel = _root;
   _skinning->init();
-  //_skinning->paintWeights(jointNameCol);
+  _skinning->paintWeights(jointNameCol);
 
 #if _SKINNING_GPU
   glewInit();

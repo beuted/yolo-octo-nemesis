@@ -1,6 +1,6 @@
 <!DOCTYPE QGLVIEWER>
 <QGLViewer version="2.3.6">
-  <State stereo="false" cameraMode="revolve">
+  <State stereo="false" cameraMode="fly">
     <foregroundColor red="180" blue="180" green="180"/>
     <backgroundColor red="255" blue="255" green="255"/>
   </State>
@@ -12,11 +12,11 @@
     </Parameters>
     <Stereo distToScreen="0.5" focusDistance="2.41421" physScreenWidth="0.4" IODist="0.062"/>
     <ManipulatedCameraFrame>
-      <position x="5.08105" y="-0.69167" z="1.86615"/>
-      <orientation q0="-0.296848" q1="-0.532552" q2="-0.527187" q3="-0.591899"/>
+      <position x="-0.643824" y="-1.80402" z="0.455856"/>
+      <orientation q0="-0.577047" q1="0.00356957" q2="0.0435351" q3="-0.815542"/>
       <ManipulatedParameters transSens="1" rotSens="1" wheelSens="1" spinSens="0.3"/>
       <ManipulatedCameraParameters flySpeed="0.01">
-        <flyUpVector x="-0.307909" y="0.267911" z="0.912916"/>
+        <flyUpVector x="0.0628912" y="0.264999" z="0.962195"/>
       </ManipulatedCameraParameters>
     </ManipulatedCameraFrame>
   </Camera>

@@ -43,7 +43,7 @@ void Skinning::init() {
 	// Compute weights :
 	if (_meth)
 		computeWeights();
-	else 
+	else
 		loadWeights("data/skinning.txt");
 
 	// Test skinning :
@@ -121,7 +121,7 @@ void Skinning::computeWeights() {
 void Skinning::loadWeights(std::string filename) {
 	std::vector<float> bone_indexA;
 	std::vector<float> bone_weightA;
-	FILE *file; fopen_r_dosunix(&file, filename.data(), "r");
+	FILE *file; fopen_r_dosunix(file, filename.data(), "r");
 	if (!file) return;
 	char * pch, *next_token;
 	const int line_size = 600;
@@ -152,7 +152,13 @@ void Skinning::loadWeights(std::string filename) {
 void Skinning::paintWeights(std::string jointName) {
 	if (_skin==NULL) return;
 	if (_skel==NULL) return;
-	
+
+	// TODO
+	_skin->_color = glm::vec4(1.0, 1.0, 1.0, 0.0);
+	for (unsigned int i = 0; i < _skin->_points.size() ; ++i) {
+		_skin->_colors.push_back(glm::vec4(_weights[i][0],1.0,0.6,0.9));
+	}
+
 }
 
 void Skinning::animate() {
