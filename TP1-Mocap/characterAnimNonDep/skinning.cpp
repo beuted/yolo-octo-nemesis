@@ -119,7 +119,7 @@ void Skinning::computeWeights() {
 	if (_skel==NULL) return;
 	
 	for (unsigned int i = 0; i < _skin->_points.size() ; ++i) {
-		_weights[i][21] = 1.0;
+		//_weights[i][21] = 1.0;
 		_weights[i][i%_joints.size()] = 1.0;
 	}
 }
