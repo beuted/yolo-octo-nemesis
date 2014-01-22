@@ -10,9 +10,9 @@
 
 
 #ifdef WIN32
-	#define fopen_r_dosunix(stream, path, mode) fopen_r(stream, path, mode)
+	#define fopen_r_dosunix(stream, path, mode) fopen_r(&stream, path, mode)
 #else
-	#define fopen_r_dosunix(stream, path, mode) freopen(path, mode, *stream)
+	#define fopen_r_dosunix(stream, path, mode) { stream = fopen(path, mode); }
 #endif
 
 
