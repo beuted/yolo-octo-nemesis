@@ -35,7 +35,9 @@ void drawBone(Skeleton *child)
 {
 	qglviewer::Vec v0(0,0,1);
 	qglviewer::Vec v1(child->_offX, child->_offY, child->_offZ);
-	qglviewer::Vec vRot = v0^v1; vRot.normalize();
+	qglviewer::Vec vRot = v0^v1;
+	if (vRot.norm() != 0)
+		vRot.normalize();
 	float angle = acosf((v0*v1)/(v0.norm()*v1.norm()))*180.0/M_PI;
 	float height = (v1-v0).norm();
 	float radius = 0.1f;
