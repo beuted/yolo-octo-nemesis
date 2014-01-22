@@ -116,6 +116,13 @@ void Skinning::computeWeights() {
 	if (_skin==NULL) return;
 	if (_skel==NULL) return;
 	
+	/*int ind;
+	for (ind = 0 ; ind <= _mesh->_points.size(); ++ind) {
+	  
+	  _weights[iV][ind] = x;
+	  }*/
+	
+	
 }
 
 void Skinning::loadWeights(std::string filename) {
