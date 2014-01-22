@@ -46,86 +46,86 @@ GLuint bone_index_vboid;				/* VBO id */
 GLint bone_index_attrib_location;		/* id in shader */
 
 
-template<typename T>
+	template<typename T>
 inline void create_buffer_object( GLuint* vbo, unsigned long BUFFER_TYPE, unsigned long ACCESS_TYPE, T* data, unsigned num_variables )
 {
-    glGenBuffers(1, vbo);
-    glBindBuffer(BUFFER_TYPE, *vbo);
-    unsigned int vbo_size = num_variables * sizeof(T);
-    glBufferData(BUFFER_TYPE, vbo_size, 0, ACCESS_TYPE);
-    glBufferSubData(BUFFER_TYPE, 0, vbo_size, data);
-    glBindBuffer(BUFFER_TYPE, 0);
+	glGenBuffers(1, vbo);
+	glBindBuffer(BUFFER_TYPE, *vbo);
+	unsigned int vbo_size = num_variables * sizeof(T);
+	glBufferData(BUFFER_TYPE, vbo_size, 0, ACCESS_TYPE);
+	glBufferSubData(BUFFER_TYPE, 0, vbo_size, data);
+	glBindBuffer(BUFFER_TYPE, 0);
 }
 
 void ReloadShader()
 {
-    cerr << "-Compiling-------------------------------------" << endl;
+	cerr << "-Compiling-------------------------------------" << endl;
 
-    char FragmentShaderFile[1000];
-    char VertexShaderFile[1000];
+	char FragmentShaderFile[1000];
+	char VertexShaderFile[1000];
 
-    Shader = ShaderNoLighting;
+	Shader = ShaderNoLighting;
 
-    sprintf_s( FragmentShaderFile, "%s.fs", Shader );
-    sprintf_s( VertexShaderFile, "%s.vs", Shader );
+	sprintf_s( FragmentShaderFile, "%s.fs", Shader );
+	sprintf_s( VertexShaderFile, "%s.vs", Shader );
 
-    GLchar* SourceCode = new GLchar[10000];
-    FILE* SourceFile;
-    GLint SourceCodeLen;
-    GLuint MyFragmentShader;
-    GLuint MyVertexShader;
-    GLchar Log[10000];
-    int L;
+	GLchar* SourceCode = new GLchar[10000];
+	FILE* SourceFile;
+	GLint SourceCodeLen;
+	GLuint MyFragmentShader;
+	GLuint MyVertexShader;
+	GLchar Log[10000];
+	int L;
 
-    //Read fragment shader source
+	//Read fragment shader source
 	fopen_s( &SourceFile, FragmentShaderFile, "r" );
-    if( !SourceFile )
-    {
-        cerr << "Could not open " << FragmentShaderFile << " for reading" << endl;
-        return;
-    }
-    SourceCodeLen = (GLint)fread( SourceCode, 1, 10000, SourceFile );
-    fclose( SourceFile );
+	if( !SourceFile )
+	{
+		cerr << "Could not open " << FragmentShaderFile << " for reading" << endl;
+		return;
+	}
+	SourceCodeLen = (GLint)fread( SourceCode, 1, 10000, SourceFile );
+	fclose( SourceFile );
 
-    MyFragmentShader = glCreateShader( GL_FRAGMENT_SHADER );
-    const char *FragmentLines = SourceCode;
-    glShaderSource( MyFragmentShader, 1, &FragmentLines, &SourceCodeLen );
-    //Compile fragment shader
-    glCompileShader( MyFragmentShader );
-    glGetShaderInfoLog( MyFragmentShader, 10000, &L, Log );
-    if( L ) cerr << "Compile log for fragment shader : " << endl << Log << endl;
-    else cerr << "Fragment shader Ok" << endl;
-
-
-    //Read vertex shader source
-    fopen_s(&SourceFile, VertexShaderFile, "r" );
-    if( !SourceFile )
-    {
-        cerr << "Could not open " << VertexShaderFile << " for reading" << endl;
-        return;
-    }
-    SourceCodeLen = (GLint)fread( SourceCode, 1, 10000, SourceFile );
-    fclose( SourceFile );
-
-    MyVertexShader = glCreateShader( GL_VERTEX_SHADER );
-    const char *VertexLines = SourceCode;
-    glShaderSource( MyVertexShader, 1, &VertexLines, &SourceCodeLen );
-    //Compile vertex shader
-    glCompileShader( MyVertexShader );
-    glGetShaderInfoLog( MyVertexShader, 10000, &L, Log );
-    if( L ) cerr << "Compile log for vertex shader : " << endl << Log << endl;
-    else cerr << "Vertex shader Ok" << endl;
+	MyFragmentShader = glCreateShader( GL_FRAGMENT_SHADER );
+	const char *FragmentLines = SourceCode;
+	glShaderSource( MyFragmentShader, 1, &FragmentLines, &SourceCodeLen );
+	//Compile fragment shader
+	glCompileShader( MyFragmentShader );
+	glGetShaderInfoLog( MyFragmentShader, 10000, &L, Log );
+	if( L ) cerr << "Compile log for fragment shader : " << endl << Log << endl;
+	else cerr << "Fragment shader Ok" << endl;
 
 
-    //Link fragment and vertex shaders
-    MyProgram = glCreateProgram();
-    glAttachShader( MyProgram, MyFragmentShader );
-    glAttachShader( MyProgram, MyVertexShader );
-    glLinkProgram( MyProgram );
-    glGetProgramInfoLog( MyProgram, 10000, &L, Log );
-    if( L ) cerr << "Compile log for link : " << endl << Log << endl;
-    else cerr << "Link Ok" << endl;
-    cerr << flush;
+	//Read vertex shader source
+	fopen_s(&SourceFile, VertexShaderFile, "r" );
+	if( !SourceFile )
+	{
+		cerr << "Could not open " << VertexShaderFile << " for reading" << endl;
+		return;
+	}
+	SourceCodeLen = (GLint)fread( SourceCode, 1, 10000, SourceFile );
+	fclose( SourceFile );
+
+	MyVertexShader = glCreateShader( GL_VERTEX_SHADER );
+	const char *VertexLines = SourceCode;
+	glShaderSource( MyVertexShader, 1, &VertexLines, &SourceCodeLen );
+	//Compile vertex shader
+	glCompileShader( MyVertexShader );
+	glGetShaderInfoLog( MyVertexShader, 10000, &L, Log );
+	if( L ) cerr << "Compile log for vertex shader : " << endl << Log << endl;
+	else cerr << "Vertex shader Ok" << endl;
+
+
+	//Link fragment and vertex shaders
+	MyProgram = glCreateProgram();
+	glAttachShader( MyProgram, MyFragmentShader );
+	glAttachShader( MyProgram, MyVertexShader );
+	glLinkProgram( MyProgram );
+	glGetProgramInfoLog( MyProgram, 10000, &L, Log );
+	if( L ) cerr << "Compile log for link : " << endl << Log << endl;
+	else cerr << "Link Ok" << endl;
+	cerr << flush;
 }
 #endif
 
@@ -176,7 +176,7 @@ void Viewer::draw()
 			glColor4f(_human->_color.x,_human->_color.y,_human->_color.z,_human->_color.w);
 			glDrawElements(GL_TRIANGLES, num_triangle_indices, GL_UNSIGNED_INT, 0 );
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-		
+
 			// deactivate data
 			glDisableClientState(GL_VERTEX_ARRAY);
 			glDisableClientState(GL_NORMAL_ARRAY);
@@ -206,103 +206,106 @@ void Viewer::animate()
 
 void Viewer::init()
 {
-  // Restore previous viewer state.
-  restoreStateFromFile();
-  setBackgroundColor(QColor(255, 255, 255));
+	// Set correct local for numeric
+	setlocale(LC_NUMERIC, "en_US.UTF-8");
 
-  // set new key descriptions :
-  setKeyDescription(Qt::Key_L, "Load an animation (.bvh)");
-  setKeyDescription(Qt::Key_W, "Change weight computation method");
+	// Restore previous viewer state.
+	restoreStateFromFile();
+	setBackgroundColor(QColor(255, 255, 255));
 
-  // Load skeleton :
-  _root = NULL;
-  _root = Skeleton::createFromFile("data/walk.bvh");
-  if (_root->_dofs.size())
-	  _nframes = _root->_dofs[0]._values.size();
-  else
-	  _nframes = 0;
-  _iframe = 0;
-  _root->nbDofs();
+	// set new key descriptions :
+	setKeyDescription(Qt::Key_L, "Load an animation (.bvh)");
+	setKeyDescription(Qt::Key_W, "Change weight computation method");
 
-  _human = NULL;
-  _skinning = NULL;
+	// Load skeleton :
+	_root = NULL;
+	_root = Skeleton::createFromFile("data/walk.bvh");
+	if (_root->_dofs.size())
+		_nframes = _root->_dofs[0]._values.size();
+	else
+		_nframes = 0;
+	_iframe = 0;
+	_root->nbDofs();
+
+	_human = NULL;
+	_skinning = NULL;
 
 #if _SKINNING_ON
-  // Load mesh :
-  _human = new Mesh();
-  _human->load("data/human9.obj");
+	// Load mesh :
+	_human = new Mesh();
+	_human->load("data/human9.obj");
 
-  // Init skinning :
-  _skinning = new Skinning();
-  _skinning->_skin = _human;
-  _skinning->_skel = _root;
-  _skinning->init();
-  std::cout << _skinning->_skin->_points.size() << " points" << std::endl;
-  std::cout << _skinning->_skin->_faces.size() << " faces" << std::endl;
-  std::cout << _skinning->_skin->_triangles.size() << " triangles" << std::endl;
-  _skinning->paintWeights(jointNameCol);
+	// Init skinning :
+	_skinning = new Skinning();
+	_skinning->_skin = _human;
+	_skinning->_skel = _root;
+	_skinning->init();
+	std::cout << _skinning->_skin->_points.size() << " points" << std::endl;
+	std::cout << _skinning->_skin->_faces.size() << " faces" << std::endl;
+	std::cout << _skinning->_skin->_triangles.size() << " triangles" << std::endl;
+	_skinning->paintWeights(jointNameCol);
 
 #if _SKINNING_GPU
-  glewInit();
-  // Load shaders
-  ReloadShader();
-  // Get mesh info to shader :
-  num_points = _human->_points.size();
-  initial_points = (Point*)calloc(sizeof(Point), num_points);
-  initial_normals = (Normal*)calloc(sizeof(Normal), num_points);
-  for (unsigned int i = 0 ; i < num_points ; i++) {
-	  initial_points[i] = _skinning->_pointsInit[i];
-	  initial_normals[i] = _human->_normals[i];
-  }
-  vector<unsigned int> triangles;
-  for (unsigned int i = 0 ; i < _human->_triangles.size() ; i++) {
-	  triangles.push_back(_human->_triangles[i]);
-  }
-  // Get bone info to shader :
-  num_bones = _skinning->_nbJoints;
-  // Get skinning info to shader :
-  bone_weight = (float*)calloc(sizeof(float),num_points * num_frames_per_point);
-  bone_index = (float*)calloc(sizeof(float),num_points * num_frames_per_point);
-  printf("%d x %d = %d\n", num_points, num_frames_per_point, num_points * num_frames_per_point);
-  int k = 0;
-  for (unsigned int i = 0 ; i < num_points ; i++) {
-	  int k1 = 0;
-	  for (unsigned int j = 0 ; j < num_bones ; j++) {
-		  if (!_skinning->_weights[i][j]) continue;
-		  bone_weight[k] = (float)_skinning->_weights[i][j];
-		  bone_index[k] = j;
-		  k++;
-		  k1++;
-	  }
-	  for (int j = k1 ; j < num_frames_per_point ; j++) {
-		  bone_weight[k] = (float)0;
-		  bone_index[k] = 0;
-		  k++;
-	  }
-  }
-  
-  // create buffer objects
-  create_buffer_object( &initial_points_vboid , GL_ARRAY_BUFFER, GL_STATIC_DRAW, initial_points , num_points );
-  create_buffer_object( &initial_normals_vboid, GL_ARRAY_BUFFER, GL_STATIC_DRAW, initial_normals, num_points );
-  create_buffer_object( &bone_weight_vboid, GL_ARRAY_BUFFER, GL_STATIC_DRAW, bone_weight, num_points * num_frames_per_point );
-  create_buffer_object( &bone_index_vboid, GL_ARRAY_BUFFER, GL_STATIC_DRAW, bone_index, num_points * num_frames_per_point );
+	glewInit();
+	// Load shaders
+	ReloadShader();
+	// Get mesh info to shader :
+	num_points = _human->_points.size();
+	initial_points = (Point*)calloc(sizeof(Point), num_points);
+	initial_normals = (Normal*)calloc(sizeof(Normal), num_points);
+	for (unsigned int i = 0 ; i < num_points ; i++) {
+		initial_points[i] = _skinning->_pointsInit[i];
+		initial_normals[i] = _human->_normals[i];
+	}
+	vector<unsigned int> triangles;
+	for (unsigned int i = 0 ; i < _human->_triangles.size() ; i++) {
+		triangles.push_back(_human->_triangles[i]);
+	}
+	// Get bone info to shader :
+	num_bones = _skinning->_nbJoints;
+	// Get skinning info to shader :
+	bone_weight = (float*)calloc(sizeof(float),num_points * num_frames_per_point);
+	bone_index = (float*)calloc(sizeof(float),num_points * num_frames_per_point);
+	printf("%d x %d = %d\n", num_points, num_frames_per_point, num_points * num_frames_per_point);
+	int k = 0;
+	for (unsigned int i = 0 ; i < num_points ; i++) {
+		int k1 = 0;
+		for (unsigned int j = 0 ; j < num_bones ; j++) {
+			if (!_skinning->_weights[i][j]) continue;
+			bone_weight[k] = (float)_skinning->_weights[i][j];
+			bone_index[k] = j;
+			k++;
+			k1++;
+		}
+		for (int j = k1 ; j < num_frames_per_point ; j++) {
+			bone_weight[k] = (float)0;
+			bone_index[k] = 0;
+			k++;
+		}
+	}
 
-  num_triangle_indices = triangles.size();
-  create_buffer_object( &triangles_ibo, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, &triangles[0], triangles.size()  );
-  cerr << triangles.size()/3 << " triangles" << endl;
+	// create buffer objects
+	create_buffer_object( &initial_points_vboid , GL_ARRAY_BUFFER, GL_STATIC_DRAW, initial_points , num_points );
+	create_buffer_object( &initial_normals_vboid, GL_ARRAY_BUFFER, GL_STATIC_DRAW, initial_normals, num_points );
+	create_buffer_object( &bone_weight_vboid, GL_ARRAY_BUFFER, GL_STATIC_DRAW, bone_weight, num_points * num_frames_per_point );
+	create_buffer_object( &bone_index_vboid, GL_ARRAY_BUFFER, GL_STATIC_DRAW, bone_index, num_points * num_frames_per_point );
 
-  /** Get access to shader data */
-  glUseProgram( MyProgram );
-  bone_weight_attrib_location = glGetAttribLocation(MyProgram, "weight");
-  //assert (bone_weight_attrib_location!=-1 ); 
-  bone_index_attrib_location = glGetAttribLocation(MyProgram, "weightIndex");
-  //assert (bone_index_attrib_location!=-1 );
-  glUseProgram( 0 );
+	num_triangle_indices = triangles.size();
+	create_buffer_object( &triangles_ibo, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, &triangles[0], triangles.size()  );
+	cerr << triangles.size()/3 << " triangles" << endl;
+
+	/** Get access to shader data */
+	glUseProgram( MyProgram );
+	bone_weight_attrib_location = glGetAttribLocation(MyProgram, "weight");
+	//assert (bone_weight_attrib_location!=-1 ); 
+	bone_index_attrib_location = glGetAttribLocation(MyProgram, "weightIndex");
+	//assert (bone_index_attrib_location!=-1 );
+	glUseProgram( 0 );
 #endif
 #endif
-  
-  // Opens help window
-  //help();
+
+	// Opens help window
+	//help();
 }
 
 void Viewer::keyPressEvent(QKeyEvent *e)
@@ -349,20 +352,20 @@ void Viewer::keyPressEvent(QKeyEvent *e)
 
 QString Viewer::helpString() const
 {
-  QString text("<h2>c h a r a c t e r A n i m</h2>");
-  text += "Use the mouse to move the camera around the object. ";
-  text += "You can respectively revolve around, zoom and translate with the three mouse buttons. ";
-  text += "Left and middle buttons pressed together rotate around the camera view direction axis<br><br>";
-  text += "Pressing <b>Alt</b> and one of the function keys (<b>F1</b>..<b>F12</b>) defines a camera keyFrame. ";
-  text += "Simply press the function key again to restore it. Several keyFrames define a ";
-  text += "camera path. Paths are saved when you quit the application and restored at next start.<br><br>";
-  text += "Press <b>F</b> to display the frame rate, <b>A</b> for the world axis, ";
-  text += "<b>Alt+Return</b> for full screen mode and <b>Control+S</b> to save a snapshot. ";
-  text += "See the <b>Keyboard</b> tab in this window for a complete shortcut list.<br><br>";
-  text += "Double clicks automates single click actions: A left button double click aligns the closer axis with the camera (if close enough). ";
-  text += "A middle button double click fits the zoom of the camera and the right button re-centers the scene.<br><br>";
-  text += "A left button double click while holding right button pressed defines the camera <i>Revolve Around Point</i>. ";
-  text += "See the <b>Mouse</b> tab and the documentation web pages for details.<br><br>";
-  text += "Press <b>Escape</b> to exit the viewer.";
-  return text;
+	QString text("<h2>c h a r a c t e r A n i m</h2>");
+	text += "Use the mouse to move the camera around the object. ";
+	text += "You can respectively revolve around, zoom and translate with the three mouse buttons. ";
+	text += "Left and middle buttons pressed together rotate around the camera view direction axis<br><br>";
+	text += "Pressing <b>Alt</b> and one of the function keys (<b>F1</b>..<b>F12</b>) defines a camera keyFrame. ";
+	text += "Simply press the function key again to restore it. Several keyFrames define a ";
+	text += "camera path. Paths are saved when you quit the application and restored at next start.<br><br>";
+	text += "Press <b>F</b> to display the frame rate, <b>A</b> for the world axis, ";
+	text += "<b>Alt+Return</b> for full screen mode and <b>Control+S</b> to save a snapshot. ";
+	text += "See the <b>Keyboard</b> tab in this window for a complete shortcut list.<br><br>";
+	text += "Double clicks automates single click actions: A left button double click aligns the closer axis with the camera (if close enough). ";
+	text += "A middle button double click fits the zoom of the camera and the right button re-centers the scene.<br><br>";
+	text += "A left button double click while holding right button pressed defines the camera <i>Revolve Around Point</i>. ";
+	text += "See the <b>Mouse</b> tab and the documentation web pages for details.<br><br>";
+	text += "Press <b>Escape</b> to exit the viewer.";
+	return text;
 }
