@@ -237,6 +237,9 @@ void Viewer::init()
   _skinning->_skin = _human;
   _skinning->_skel = _root;
   _skinning->init();
+  std::cout << _skinning->_skin->_points.size() << " points" << std::endl;
+  std::cout << _skinning->_skin->_faces.size() << " faces" << std::endl;
+  std::cout << _skinning->_skin->_triangles.size() << " triangles" << std::endl;
   _skinning->paintWeights(jointNameCol);
 
 #if _SKINNING_GPU

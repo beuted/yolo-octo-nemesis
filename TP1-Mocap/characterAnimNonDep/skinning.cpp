@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "skinning.h"
 #include "dosunix_bind.h"
 
@@ -116,6 +118,9 @@ void Skinning::computeWeights() {
 	if (_skin==NULL) return;
 	if (_skel==NULL) return;
 	
+	for (unsigned int i = 0; i < _skin->_points.size() ; ++i) {
+		_weights[i][21] = 1.0;
+	}
 }
 
 void Skinning::loadWeights(std::string filename) {
@@ -153,10 +158,23 @@ void Skinning::paintWeights(std::string jointName) {
 	if (_skin==NULL) return;
 	if (_skel==NULL) return;
 
-	// TODO
-	_skin->_color = glm::vec4(1.0, 1.0, 1.0, 0.0);
+	unsigned int i;
+	for (i = 0; i < _joints.size() && _joints[i]->_name.compare(jointName) != 0; i++);
+
+	// Joint not found
+	if (i == _joints.size() && _joints[i]->_name.compare(jointName) != 0) {
+		std::cerr << "Warning: Joint " << jointName << " not found" << std::endl;
+		return;
+	} else {
+		std::cerr << "Joint " << jointName << " found at " << i << std::endl;
+		std::cerr << _joints.size()  <<  " joints in the mesh" << std::endl;
+	}
+
+	unsigned int jointIdx = i;
+
 	for (unsigned int i = 0; i < _skin->_points.size() ; ++i) {
-		_skin->_colors.push_back(glm::vec4(_weights[i][0],1.0,0.6,0.9));
+		double weight = _weights[i][jointIdx];
+		_skin->_colors.push_back(glm::vec4(weight, weight, weight, 0.9));
 	}
 
 }
