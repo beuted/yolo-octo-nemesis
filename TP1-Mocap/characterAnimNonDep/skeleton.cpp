@@ -266,17 +266,18 @@ void Skeleton::nbDofs() {
 	// TODO : pas sur que ca marche ce truc ...
 	std::cout << (*vaa)[0] << ", " << (*vaa)[1] << ", " << (*vaa)[2] << ", norm = " << (*vaa).norm() << std::endl;
 	////////////////////////////
-	if (vaa->norm() < 0.0001)
+	if (vaa->norm() < 0.001)
 	  nbDofsR = 0;
 	else {
 	  eulerToAxisAngle(_dofs[0]._values[0],_dofs[1]._values[0],_dofs[2]._values[0], roXYZ, vaa);
 	  //eulerToAxisAngle(this->_curRx,this->_curRy,this->_curRz, this->_rorder, vaa);
-	  for (int j = 0; j < _dofs[0]._values.size(); ++j) {
+	  for (int j = 1; j < _dofs[0]._values.size(); ++j) {
 	    qglviewer::Vec vaaPrec = (*vaa);
+	    vaaPrec.normalize();	
 	    eulerToAxisAngle(_dofs[0]._values[j],_dofs[1]._values[j],_dofs[2]._values[j], roXYZ, vaa);
-	    if (abs((*vaa)[0] - vaaPrec[0]) >= tol ||
-		abs((*vaa)[1] - vaaPrec[1]) >= tol ||
-		abs((*vaa)[2] - vaaPrec[2]) >= tol) {
+	    qglviewer::Vec vaaNormalized = (*vaa);
+	    vaaNormalized.normalize();
+	    if (vaaNormalized * vaaPrec >= tol) {
 	      nbDofsR = 2;
 	    }
 	  }
