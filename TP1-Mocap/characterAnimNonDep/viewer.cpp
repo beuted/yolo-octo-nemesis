@@ -4,7 +4,7 @@
 
 using namespace std;
 
-std::string jointNameCol = "lhumerus";
+std::string jointNameCol = "hip";
 
 #if _SKINNING_GPU
 #define BUFFER_OFFSET(a) ((char*)NULL + (a))
@@ -243,7 +243,7 @@ void Viewer::init()
 	std::cout << _skinning->_skin->_points.size() << " points" << std::endl;
 	std::cout << _skinning->_skin->_faces.size() << " faces" << std::endl;
 	std::cout << _skinning->_skin->_triangles.size() << " triangles" << std::endl;
-	_skinning->paintWeights(jointNameCol);
+	//_skinning->paintWeights(jointNameCol); //DECOMMENTER POUR LES COULEURS
 
 #if _SKINNING_GPU
 	glewInit();

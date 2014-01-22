@@ -118,9 +118,21 @@ void Skinning::computeWeights() {
 	if (_skin==NULL) return;
 	if (_skel==NULL) return;
 	
-	for (unsigned int i = 0; i < _skin->_points.size() ; ++i) {
-		_weights[i][21] = 1.0;
-		_weights[i][i%_joints.size()] = 1.0;
+	for (unsigned int i = 0; i < _pointsInit.size() ; ++i) {
+	  int j_min_dist = -1;
+	  double min_dist = std::numeric_limits<double>::max();
+	  for (unsigned int j = 0; j < _posBonesInit.size(); ++j) {
+	    _weights[i][j] = 0.0; // initialisation
+	    // recherche de max
+	    glm::vec4 diff = (_pointsInit[i] - _posBonesInit[j]);
+	    double norm_diff = sqrt(diff[0]*diff[0] + diff[1]*diff[1] + diff[2]*diff[2]); 
+	    if (norm_diff < min_dist) {
+	      j_min_dist = j;
+	      min_dist = norm_diff;
+	    }
+	    
+	  }
+	  _weights[i][j_min_dist] = 1.0;
 	}
 }
 
@@ -172,7 +184,7 @@ void Skinning::paintWeights(std::string jointName) {
 	}
 
 	unsigned int jointIdx = i;
-
+	_skin->_colors.clear();
 	for (unsigned int i = 0; i < _skin->_points.size() ; ++i) {
 		double weight = _weights[i][jointIdx];
 		_skin->_colors.push_back(glm::vec4(weight, 0.0, 0.0, 0.9));
@@ -199,5 +211,12 @@ void Skinning::animate() {
 }
 
 void Skinning::applySkinning() {
-	
+  for (unsigned int i = 0; i < _pointsInit.size(); ++i) {
+    glm::vec4 * P = &(_pointsInit[i]);
+    glm::vec4   P_new(0.0,0.0,0.0,0.0);
+    for (unsigned int j = 0; j < _joints.size(); ++j) {
+      P_new += _weights[i][j] * (_transfoCurr[j] * _transfoInitInv[j]) * (*P);
+    }
+    _skin->_points[i] = P_new;
+  }
 }
