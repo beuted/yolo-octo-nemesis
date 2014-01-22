@@ -66,8 +66,8 @@ void ReloadShader()
 
 	Shader = ShaderNoLighting;
 
-	sprintf_s( FragmentShaderFile, "%s.fs", Shader );
-	sprintf_s( VertexShaderFile, "%s.vs", Shader );
+	sprintf_s_dosunix( FragmentShaderFile, "%s.fs", Shader );
+	sprintf_s_dosunix( VertexShaderFile, "%s.vs", Shader );
 
 	GLchar* SourceCode = new GLchar[10000];
 	FILE* SourceFile;
@@ -78,7 +78,7 @@ void ReloadShader()
 	int L;
 
 	//Read fragment shader source
-	fopen_s( &SourceFile, FragmentShaderFile, "r" );
+	SourceFile = fopen(FragmentShaderFile, "r" );
 	if( !SourceFile )
 	{
 		cerr << "Could not open " << FragmentShaderFile << " for reading" << endl;
@@ -98,7 +98,7 @@ void ReloadShader()
 
 
 	//Read vertex shader source
-	fopen_s(&SourceFile, VertexShaderFile, "r" );
+	SourceFile  = fopen(VertexShaderFile, "r" );
 	if( !SourceFile )
 	{
 		cerr << "Could not open " << VertexShaderFile << " for reading" << endl;
