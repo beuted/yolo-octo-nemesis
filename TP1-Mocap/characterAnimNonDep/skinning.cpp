@@ -118,15 +118,10 @@ void Skinning::computeWeights() {
 	if (_skin==NULL) return;
 	if (_skel==NULL) return;
 	
-	int ind;
-	for (ind = 0 ; ind <= _mesh->_points.size(); ++ind) {
-	  
-	  
-	  _weights[iV][ind] = x;
+	for (unsigned int i = 0; i < _skin->_points.size() ; ++i) {
+		_weights[i][21] = 1.0;
+		_weights[i][i%_joints.size()] = 1.0;
 	}
-	
-	
-
 }
 
 void Skinning::loadWeights(std::string filename) {
@@ -180,7 +175,7 @@ void Skinning::paintWeights(std::string jointName) {
 
 	for (unsigned int i = 0; i < _skin->_points.size() ; ++i) {
 		double weight = _weights[i][jointIdx];
-		_skin->_colors.push_back(glm::vec4(weight, weight, weight, 0.9));
+		_skin->_colors.push_back(glm::vec4(weight, 0.0, 0.0, 0.9));
 	}
 
 }

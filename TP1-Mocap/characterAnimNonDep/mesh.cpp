@@ -75,9 +75,9 @@ void Mesh::load(const char* fileName) {
 			}
 			if (key[0]=='v' && key[1]=='n') {
 				glm::vec3 vi;
-				char* valx = strtok_r(NULL, " \t\n\r", &next_token); update_string(valx);
-				char* valy = strtok_r(NULL, " \t\n\r", &next_token); update_string(valy);
-				char* valz = strtok_r(NULL, " \t\n\r", &next_token); update_string(valz);
+				char* valx = strtok_r(NULL, " \t\n\r", &next_token);// update_string(valx);
+				char* valy = strtok_r(NULL, " \t\n\r", &next_token);// update_string(valy);
+				char* valz = strtok_r(NULL, " \t\n\r", &next_token);// update_string(valz);
 				vi.x = (double)atof(valx);
 				vi.y = (double)atof(valy);
 				vi.z = (double)atof(valz);
@@ -89,9 +89,9 @@ void Mesh::load(const char* fileName) {
 				//std::cout << "  > vt" << std::endl;
 			} else if (key[0]=='v') {
 				glm::vec4 vi(0,0,0,1);
-				char* valx = strtok_r(NULL, " \t\n\r", &next_token); update_string(valx);
-				char* valy = strtok_r(NULL, " \t\n\r", &next_token); update_string(valy);
-				char* valz = strtok_r(NULL, " \t\n\r", &next_token); update_string(valz);
+				char* valx = strtok_r(NULL, " \t\n\r", &next_token); // update_string(valx);
+				char* valy = strtok_r(NULL, " \t\n\r", &next_token); // update_string(valy);
+				char* valz = strtok_r(NULL, " \t\n\r", &next_token); // update_string(valz);
 				vi.x = (double)atof(valx);
 				vi.y = (double)atof(valy);
 				vi.z = (double)atof(valz);
