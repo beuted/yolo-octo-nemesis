@@ -288,8 +288,6 @@ void Skeleton::nbDofs() {
 	
 	// Test 0 Dofs
 	for (int j = 1; j < _dofs[0]._values.size(); ++j) {
-
-	  std::cout << _dofs[3].name.compare("Zrotation") << std::endl;//TRACE
  
 	  eulerToAxisAngle(_dofs[0]._values[j],_dofs[1]._values[j],_dofs[2]._values[j], roXYZ, vaa);
 	  if (vaa->norm() > 0.1) {
