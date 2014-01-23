@@ -134,72 +134,66 @@ void Skinning::computeSmoothWeights() {
 	if (_skin==NULL) return;
 	if (_skel==NULL) return;
 
-	for (unsigned int i = 0; i < _pointsInit.size() ; ++i)
-		for (unsigned int j = 0; j < _posBonesInit.size(); ++j)
-			_weights[i][j] = 0; // initialisation
-
 	for (unsigned int i = 0; i < _pointsInit.size() ; ++i) {
-		int js_min_dist = 0;
-		int jt_min_dist = 0;
-		double ratio;
+		int j_min_dist = -1;
 		double min_dist = std::numeric_limits<double>::max();
+		glm::vec4 P = _pointsInit[i];
 
 		for (unsigned int j = 0; j < _posBonesInit.size(); ++j) {
+			_weights[i][j] = 0; // initialisation
+
+			double PUdist;
 
 			// Deux skeletons S et T
 			// Dot product (SP . ST) * ST = SU
 			// Resultat dans kU
-			glm::vec4 P = _pointsInit[i];
-			glm::vec4 S = _posBonesInit[j];
-			Skeleton *skull = _joints[j];
-			for (unsigned int l = 0; l < skull->_children.size(); ++l) {
-				// skeleton child index recovery
-				std::string jointName = skull->_children[l]->_name;
-				unsigned int idxTskull;
-				for (idxTskull = 0; idxTskull < _joints.size() && _joints[idxTskull]->_name.compare(jointName) != 0; idxTskull++);
-				if (idxTskull == _joints.size() && _joints[idxTskull]->_name.compare(jointName) != 0) {
-					std::cerr << "Warning: Joint " << jointName << " not found" << std::endl;
-					continue;
-				}
+			glm::vec4 T = _posBonesInit[j];
+			Skeleton *skel = _joints[j];
+			if (skel->_children.size() == 0) {
+				//std::cerr << skel->_name << " n'a pas de fils" << std::endl;
+				continue;
+			}
 
-				if (i == 0)
-					std::cerr << skull->_name << " [" << j << "] parent de " << l << "e fils " << jointName << " [" << idxTskull << "]" << std::endl;
+			// Vectors definition
+			glm::mat4 M = _transfoInit[j];
+			glm::vec4 S(M[3][0],M[3][1],M[3][2],M[3][3]); //TODO position du skel
+			glm::vec4 ST = T - S;
+			glm::vec4 SP = P - S;
+			double STn = sqrt(ST[0]*ST[0] + ST[1]*ST[1] + ST[2]*ST[2] + ST[3]*ST[3]);
 
-				// Vectors definition
-				glm::vec4 T = _posBonesInit[idxTskull];
-				glm::vec4 ST = T - S;
-				glm::vec4 SP = P - S;
-
-				// Porjection and coefficient computation
-				double STn = sqrt(ST[0]*ST[0] + ST[1]*ST[1] + ST[2]*ST[2] + ST[3]*ST[3]);
-				glm::vec4 SU = (glm::dot(SP, ST) / (STn * STn)) * ST;
+			if (STn == 0) {
+				// Spherical distance
+				PUdist = glm::distance(P, T);			
+			} else {
+				// Projection and coefficient computation
+				double dotpdct = glm::dot(SP, ST);
+				glm::vec4 SU = (dotpdct / (STn * STn)) * ST;
 				double SUn = sqrt(SU[0]*SU[0] + SU[1]*SU[1] + SU[2]*SU[2] + SU[3]*SU[3]);
 				double kU = SUn / STn;
 
-				// Check si entre 0 et 1
-				if (kU < 0 || kU > 1)
+				// Check si entre 0 et 2
+				if (dotpdct < 0 || kU > 2)
 					continue;
 
 				// Pythagore
 				// sqrt ( || SP ||² - || ku * ST ||² ) = dist
 				double SPn = sqrt(SP[0]*SP[0] + SP[1]*SP[1] + SP[2]*SP[2] + SP[3]*SP[3]);
-				double PUdist = sqrt((SPn * SPn) - (SUn * SUn));
+				double PUdistpow = (SPn * SPn) - (SUn * SUn);
+				if (PUdistpow < 0)
+					continue;
+				PUdist = sqrt(PUdistpow);
 				//double norm_diff = sqrt(diff[0]*diff[0] + diff[1]*diff[1] + diff[2]*diff[2]);
+			}
 
-				// Check for min dist
-				if (PUdist < min_dist) {
-					js_min_dist = j;
-					jt_min_dist = l;
-					ratio = kU;
-
-					min_dist = PUdist;
-				}
+			// Check for min dist
+			if (PUdist < min_dist) {
+				j_min_dist = j;
+				min_dist = PUdist;
 			}
 		}
 
-		if (js_min_dist != jt_min_dist) {
-			_weights[i][js_min_dist] = ratio;
-			_weights[i][jt_min_dist] = 1.0 - ratio;
+		if (j_min_dist != -1 ) {
+			_weights[i][j_min_dist] = 1.0;
 		}
 	}
 }
