@@ -137,63 +137,58 @@ void Skinning::computeSmoothWeights() {
 	for (unsigned int i = 0; i < _pointsInit.size() ; ++i) {
 		int j_min_dist = -1;
 		double min_dist = std::numeric_limits<double>::max();
+		double coef;
 		glm::vec4 P = _pointsInit[i];
 
 		for (unsigned int j = 0; j < _posBonesInit.size(); ++j) {
-			_weights[i][j] = 0; // initialisation
+			_weights[i][j] = 0.0; // initialisation
+			double PUdist, kU;
 
-			double PUdist;
-
-			// Deux skeletons S et T
-			// Dot product (SP . ST) * ST = SU
-			// Resultat dans kU
-			glm::vec4 T = _posBonesInit[j];
 			Skeleton *skel = _joints[j];
-			if (skel->_children.size() == 0) {
-				//std::cerr << skel->_name << " n'a pas de fils" << std::endl;
-				continue;
-			}
+			//if (skel->_children.size() == 0) {
+			//	continue;
+			//}
 
-			// Vectors definition
+			// T milieu de l'os
+			glm::vec4 T = _posBonesInit[j];
 			glm::mat4 M = _transfoInit[j];
-			glm::vec4 S(M[3][0],M[3][1],M[3][2],M[3][3]); //TODO position du skel
+			// S articulation
+			glm::vec4 S(M[3][0],M[3][1],M[3][2],M[3][3]);
+			// ST axe de l'os
 			glm::vec4 ST = T - S;
-			glm::vec4 SP = P - S;
-			double STn = sqrt(ST[0]*ST[0] + ST[1]*ST[1] + ST[2]*ST[2] + ST[3]*ST[3]);
+			double STn = glm::length(ST);
 
 			if (STn == 0) {
-				// Spherical distance
-				PUdist = glm::distance(P, T);			
+				// aucun axe, articulation seule
+				// Calcul de la distance euclidienne à l'os
+				PUdist = glm::distance(S, P);
 			} else {
-				// Projection and coefficient computation
+				// Projeté orthogonal du point P sur l'os ST en U
+				glm::vec4 SP = P - S;
 				double dotpdct = glm::dot(SP, ST);
 				glm::vec4 SU = (dotpdct / (STn * STn)) * ST;
-				double SUn = sqrt(SU[0]*SU[0] + SU[1]*SU[1] + SU[2]*SU[2] + SU[3]*SU[3]);
-				double kU = SUn / STn;
+				glm::vec4 U = S + SU;
 
-				// Check si entre 0 et 2
-				if (dotpdct < 0 || kU > 2)
+				// Test de l'appartennance du U à l'os [ST?]
+				double SUn = glm::length(SU);
+				kU = SUn / (2 * STn);
+				if (dotpdct < 0 || kU > 1)
 					continue;
 
-				// Pythagore
-				// sqrt ( || SP ||² - || ku * ST ||² ) = dist
-				double SPn = sqrt(SP[0]*SP[0] + SP[1]*SP[1] + SP[2]*SP[2] + SP[3]*SP[3]);
-				double PUdistpow = (SPn * SPn) - (SUn * SUn);
-				if (PUdistpow < 0)
-					continue;
-				PUdist = sqrt(PUdistpow);
-				//double norm_diff = sqrt(diff[0]*diff[0] + diff[1]*diff[1] + diff[2]*diff[2]);
+				// Calcul de la distance cylindrique = dist(P,U)
+				PUdist = glm::distance(P, U);
 			}
 
-			// Check for min dist
+			// Mise à jour de la distance minimum
 			if (PUdist < min_dist) {
 				j_min_dist = j;
 				min_dist = PUdist;
+				coef = 1.0;
 			}
 		}
 
 		if (j_min_dist != -1 ) {
-			_weights[i][j_min_dist] = 1.0;
+			_weights[i][j_min_dist] = coef;
 		}
 	}
 }
