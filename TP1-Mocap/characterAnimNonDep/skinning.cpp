@@ -53,6 +53,9 @@ void Skinning::init() {
 		case 2:
 			computeSmoothWeights();
 			break;
+		case 3:
+			computeRigidCylindricWeights();
+			break;
 	}
 
 
@@ -78,6 +81,10 @@ void Skinning::recomputeWeights() {
 		case 2:
 			cout << "computing smooth weights\n";
 			computeSmoothWeights();
+			break;
+		case 3:
+			cout << "computing rigid weights\n";
+			computeRigidCylindricWeights();
 			break;
 	}
 
@@ -129,8 +136,129 @@ void Skinning::computeTransfo(Skeleton *skel, int *idx) {
 	_transfoCurr[i0] = glm::transpose(_transfoCurr[i0]);
 }
 
+double Skinning::euclidianDistance(unsigned int point, unsigned int joint) {
+	
+	unsigned int i = point;
+	unsigned int j = joint;
+
+	// Initialisation
+	glm::vec4 P = _pointsInit[i];
+
+	// T milieu de l'os
+	glm::vec4 T = _posBonesInit[j];
+	glm::vec4 TP = P - T;
+	double TPdist = glm::length(TP);
+
+	return TPdist;
+}
+
+double Skinning::cylindricDistance(unsigned int point, unsigned int joint) {
+
+	unsigned int i = point;
+	unsigned int j = joint;
+
+	// Initialisation
+	glm::vec4 P = _pointsInit[i];
+	double PUdist, kU;
+	Skeleton *skel = _joints[j];
+
+	// T milieu de l'os
+	glm::vec4 T = _posBonesInit[j];
+	glm::mat4 M = _transfoInit[j];
+	// S articulation
+	glm::vec4 S(M[3][0],M[3][1],M[3][2],M[3][3]);
+	// ST axe de l'os
+	glm::vec4 ST = T - S;
+	double STn = glm::length(ST);
+
+	if (STn == 0) {
+		// aucun axe, articulation seule
+		// Calcul de la distance euclidienne à l'os
+		PUdist = glm::distance(S, P);
+	} else {
+		// Projeté orthogonal du point P sur l'os ST en U
+		glm::vec4 SP = P - S;
+		double dotpdct = glm::dot(SP, ST);
+		glm::vec4 SU = (dotpdct / STn) * (ST / STn);
+		glm::vec4 U = S + SU;
+
+		//double SUn = glm::length(SU);
+		double SUn = dotpdct / STn;
+		double kU = SUn / (2 * STn);
+
+		// Calcul de la distance cylindrique = dist(P,U)
+		glm::vec4 R = 2 * ST;
+		if (kU < 0)
+			PUdist = glm::distance(S, P);
+		else if (kU > 1)
+			PUdist = glm::distance(R, P);
+		else
+			PUdist = glm::distance(P, U);
+	}
+
+	return PUdist;
+}
+
+#define NB_COEF_SMOOTH 4 //_posBonesInit.size()
+
+int test_and_put(double coef[], double val, unsigned int indices[], unsigned int j) {
+	int imax = 0;
+	double max = coef[0];
+	for (unsigned int i = 0; i < NB_COEF_SMOOTH; i++) {
+		if (max < coef[i]) {
+			imax = i;
+			max = coef[i];
+		}
+	}
+	if (val < max) {
+		coef[imax] = val;
+		indices[imax] = j;
+		return 1;
+	}
+	return 0;
+}
 
 void Skinning::computeSmoothWeights() {
+	if (_skin==NULL) return;
+	if (_skel==NULL) return;
+
+
+	for (unsigned int i = 0; i < _pointsInit.size() ; ++i) {
+		double min_dist = std::numeric_limits<double>::max();
+		double coef[NB_COEF_SMOOTH];
+		unsigned int indices[NB_COEF_SMOOTH];
+
+		unsigned int nbFilled = 0;
+
+		for (unsigned int k = 0; k < NB_COEF_SMOOTH; k++) {
+			coef[k] = min_dist;
+			indices[k] = -1;
+		}
+		double coefsum = 0;
+
+		for (unsigned int j = 0; j < _posBonesInit.size(); ++j) {
+			// Initialisation
+			_weights[i][j] = 0.0;
+			double PUdist;
+
+			//PUdist = 1/exp(-3 * euclidianDistance(i, j));
+			PUdist = 1/exp(-3 * cylindricDistance(i, j));
+
+			// Stockage de la distance
+			nbFilled += test_and_put(coef, PUdist, indices, j);
+		}
+
+		if (nbFilled >= NB_COEF_SMOOTH) {
+			for (unsigned int k = 0; k < NB_COEF_SMOOTH; k++)
+				coefsum += 1/coef[k];
+			for (unsigned int j = 0; j < NB_COEF_SMOOTH; ++j) {
+				_weights[i][indices[j]] = 1/(coef[j]*coefsum);
+			}
+		}
+	}
+}
+
+void Skinning::computeRigidCylindricWeights() {
 	if (_skin==NULL) return;
 	if (_skel==NULL) return;
 
@@ -183,12 +311,11 @@ void Skinning::computeSmoothWeights() {
 			if (PUdist < min_dist) {
 				j_min_dist = j;
 				min_dist = PUdist;
-				coef = 1.0;
 			}
 		}
 
 		if (j_min_dist != -1 ) {
-			_weights[i][j_min_dist] = coef;
+			_weights[i][j_min_dist] = 1.0;
 		}
 	}
 }
@@ -255,18 +382,18 @@ void Skinning::paintWeights(std::string jointName) {
 
 	// Joint not found
 	if (i == _joints.size() && _joints[i]->_name.compare(jointName) != 0) {
-		std::cerr << "Warning: Joint " << jointName << " not found" << std::endl;
+		//std::cerr << "Warning: Joint " << jointName << " not found" << std::endl;
 		return;
 	} else {
-		std::cerr << "Joint " << jointName << " found at " << i << std::endl;
-		std::cerr << _joints.size()  <<  " joints in the mesh" << std::endl;
+		//std::cerr << "Joint " << jointName << " found at " << i << std::endl;
+		//std::cerr << _joints.size()  <<  " joints in the mesh" << std::endl;
 	}
 
 	unsigned int jointIdx = i;
 	_skin->_colors.clear();
 	for (unsigned int i = 0; i < _skin->_points.size() ; ++i) {
 		double weight = _weights[i][jointIdx];
-		_skin->_colors.push_back(glm::vec4(0.0, weight, 0.0, 0.9));
+		_skin->_colors.push_back(glm::vec4(0.0, weight/2, weight, 0.9));
 	}
 
 }
