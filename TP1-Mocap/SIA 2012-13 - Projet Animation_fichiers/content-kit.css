@@ -1,0 +1,162 @@
+/* Style CSS des pages du KIOSK 
+ * Basé sur la palette de couleurs tango: http://tango.freedesktop.org/Tango_Icon_Theme_Guidelines#Color_Palette
+ * 
+ * Par:
+ *   Gabriel Besson: gabriel.besson@ensimag.fr 
+ *   Damien Dejean: damien.dejean@ensimag.fr
+ * 
+ * Date: Juin 2010
+ *
+ * version 1.0
+ * 
+ * Défini les styles de mises en forme pour la section contenu.
+ */
+
+
+
+
+
+/******************************************************************************/
+/*                              Généralités                                   */
+/******************************************************************************/
+img {
+    /* Pour éviter la bordure si liens */
+    border: none;
+}
+
+a {
+    color: #2e3436;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* classe pour mettre en valeur une partie du texte */
+.emphase {
+    color: #a40000; /* rouge */
+}
+
+/* Classe pour écrire en caractères de largeur constante */
+.Monospace {
+    font-family: Monospace;
+}
+
+
+
+
+
+/******************************************************************************/
+/*                            Contenu central                                 */
+/******************************************************************************/
+
+/*------------------------------*/
+/*       Menu de gauche         */
+/*------------------------------*/
+
+#menu {
+    width: 180px; /* redéfinition de la largeur */
+}
+    
+#menu ul {
+    margin: 0px;
+    padding: 0px;
+    list-style-type: none;
+    text-align: center;
+}
+
+#menu ul.liensmenu li {
+    float: left;
+}
+
+/* Créer des liens en forme de boutons */
+#menu ul.liensmenu li a {
+    margin: 2px;
+    padding: 4px;
+    border: 1px solid #d3d7cf; /* Gris */
+    display: block;  /* Matérialiser un lien (donner hauteur, largeur, etc...) */
+    height: 16px;
+    width: 16px;
+    line-height: 16px;
+    vertical-align: middle;
+    background-color: white;
+    text-decoration: none;
+}
+
+#menu ul.liensmenu li a:hover {
+    border-color: #729fcf; /* Bleu clair */
+    background-color: #cee0f4; /* Bleu encore plus clair */
+}
+
+/* Propager le centrage vertical au icones */
+#menu ul.liensmenu li a img {
+    vertical-align: middle;
+    line-height: 28px;
+    margin-bottom: 2px;
+}
+
+#menuprof {
+    clear: both;
+}
+
+
+/*------------------------------*/
+/* Principal (à droite du menu) */
+/*------------------------------*/
+#principal {
+    margin-left: 180px;  /* redéfinition de la largeur */
+}
+
+
+/*---------------------------*/
+/*  Contenu utile : content  */
+/*---------------------------*/
+#content {
+    text-align: justify;
+}
+
+#content a {
+    color: #3465a4; /* Bleu */
+}
+
+#content ul {
+    list-style-type: circle;
+}
+
+#content li, dd {
+    /* aérer les liens de la liste de classe liste_liens */
+    padding-top: 1px;
+    padding-bottom: 2px;
+}
+
+#content ul.liste_liens {
+    /* Utile si l'on veut rajouter une propriété ne s'appliquant qu'aux listes
+     * ayant la classe liste_liens : ce sont celle des liens pour la navigation
+     */
+    margin-top: 10px;
+}
+
+#content dt {
+    font-weight: bold;
+}
+
+#content h1 {
+    text-align: center;
+}
+
+#content h2 {
+    color: #4e9a06; /* vert */
+    margin-bottom: 0px;
+}
+
+#content h3 {
+    color: #274c03; /* vert foncé */
+    margin-bottom: 0px;
+}
+
+#content h4 {
+    margin-bottom : 0px;
+}
+
+

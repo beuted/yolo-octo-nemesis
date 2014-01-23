@@ -1,0 +1,243 @@
+/* Style CSS des pages du KIOSK 
+ * Basé sur la palette de couleurs tango: http://tango.freedesktop.org/Tango_Icon_Theme_Guidelines#Color_Palette
+ * 
+ * Par:
+ *   Gabriel Besson: gabriel.besson@ensimag.fr 
+ *   Damien Dejean: damien.dejean@ensimag.fr
+ * 
+ * Date: Juin 2010
+ *
+ * version 1.0
+ *
+ * Défini les styles de dispositions des sections de la page (entête, menu, navigation, pied, ...)
+ */
+
+/* Proprietes generales */
+html, body {
+    min-width: 10px;
+    margin: 10px;
+    padding: 10px;
+
+}
+body {
+    /* Image qui donne le relief de la page et fait la largeur du corps */
+    background: url('../Images/fond.png') repeat-y top center #eeeeec;
+    /* Largeur mini de la page pour l'affichage correct de l'image de relief */
+    color: #555753; /* Gris foncé */
+}
+
+img {
+    /* Pour éviter la bordure si liens */
+    border: none;
+}
+
+a {
+    color: #2e3436;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+
+
+/******************************************************************************/
+/*               Proprietes et placements des structures                      */
+/******************************************************************************/
+
+
+/* Structure de la page :
+ *  - global: role de body, permet de centrer la page,
+ *    + header: bandeau de titre
+ *    + main: contient la zone centrale (menu, adresse et contenu)
+ *        ~ menu: menu général à gauche
+ *        ~ path: barre d'adresse utile aprés l'accueil
+ *        ~ content: contenu utile de la page (textes, liens, ...)
+ *    + footer: pied de page 
+ */
+
+
+#global {
+    position: relative;
+    width: 1000px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    /* Centrer le global */
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0px;
+    font-family: Verdana, sans-serif;
+    /* Kiosk en filigrane */
+    background: url('../Images/ColonneMorris.png') bottom right no-repeat white;
+}
+
+
+
+/********************************/
+/*      Bandeau de titre        */
+/********************************/
+#header {
+    margin: 10px 0px;
+    padding: 0px;
+    /* Centrer verticalement: height=line-height */
+    height: 130px;
+    line-height: 130px;
+    font-size: 150%;
+}
+
+#header h1 {
+    margin: 0px;
+    color: #2e3436; /* Gris foncé */
+    text-align:center;
+}
+
+#headerlogogauche {
+    float: left;
+    margin: 0px 25px;
+    margin-left: 30px;
+}
+
+#headerlogodroit {
+    float: right;
+    margin: 15px 0px;
+}
+
+
+
+/******************************************************************************/
+/*                            Contenu central                                 */
+/******************************************************************************/
+#main {
+    clear: both;
+    margin: 0px;
+    padding: 5px 0px;
+}
+
+/*----------------*/
+/* Menu de gauche */
+/*----------------*/
+#menu {
+    width: 225px;
+    float: left;
+    padding-bottom: 30px;
+    border-right: 1px solid #3465a4; /* Bleu */ 
+}
+
+
+/*------------------------------*/
+/* Principal (à droite du menu) */
+/*------------------------------*/
+#principal {
+    margin-left: 225px;   
+    padding-left: 36px;
+    border-left: 1px solid #3465a4; /* Bleu */ 
+    /* Pour ne pas écraser le kiosk et le menu */
+    min-height: 500px;
+}
+
+
+/*-----------------*/
+/* Barre d'adresse */
+/*-----------------*/
+#nav {
+    margin-bottom: 20px;
+}
+
+#path {
+    padding: 5px;
+    padding-top: 7px;
+    padding-bottom: 0px;
+    height: 23px;
+    line-height: 23px;
+    border-bottom :1px solid #73d216; /* Vert */
+    overflow: hidden;
+}
+
+#path a {
+    color: #73d216; /* Vert */
+}
+
+#path a:hover {
+    color: #8ae234; /* Vert clair */
+    text-decoration: underline;
+}
+
+.navigauche {
+    float: left;
+    vertical-align: sub;
+}
+.navidroite {
+    float: right;
+    vertical-align: sub;
+}
+
+#connect {
+    float: right;
+    font-size: 11px;
+}
+
+
+/*-----------------*/
+/*  Contenu utile  */
+/*-----------------*/
+#content {
+    margin-top: 10px;
+    padding-right: 10px;
+    padding-bottom: 30px;
+    word-wrap: break-word;
+    font-size: 14px;
+}
+
+/* Pour les style du contenu,          */
+/* cf la feuille de style appropriée */
+
+
+
+
+/******************************************************************************/
+/*                              Pied de page                                  */
+/******************************************************************************/
+#footer {
+    clear: both;
+    margin: 0px;
+    margin-top: 10px;
+    padding: 5px;
+    border-top: 1px solid #d3d7cf; /* Gris 20% */
+    height: 21px;
+    line-height: 21px;
+    vertical-align: middle;
+    font-size: 75%;
+    text-align: center;
+}
+
+#footer img {
+    vertical-align: middle; 
+}
+
+
+
+/******************************************************************************/
+/*                              Popup Connexion                               */
+/******************************************************************************/
+#connexion {
+    position: absolute;
+    top : 180px;
+    left : 462px; 
+    background : white;
+    border : 3px solid #4e9a06;
+    padding : 25px;
+    width: 300px;
+}
+
+
+
+
+
+
+
+
+
+
+
+

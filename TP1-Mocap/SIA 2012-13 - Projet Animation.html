@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang=""><head>
+    <meta http-equiv="content-type" content="text/html; charset=windows-1252">
+    <link rel="stylesheet" href="SIA%202012-13%20-%20Projet%20Animation_fichiers/index.html">
+    <style type="text/css">
+<!--
+body {
+	padding: 100px;
+}
+.codehtml {
+	font-family: "Courier New", Courier, monospace;
+}
+.base {
+	color: #090;
+}
+.long {
+	color: #F00;
+}
+.medium {
+	color: #00F;
+}
+-->
+</style><!--?xml version='1.0' encoding='iso-8859-1'?-->
+    <title>SIA 2012-13 - Projet Animation</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+    <!--<link rel="shortcut icon" type="image/vnd.microsoft.icon" href="Images/favicon.ico" />-->
+    <link rel="shortcut icon" type="image/png" href="http://intranet.ensimag.fr/KIOSK/Matieres/5MMSIA1/Images/favicon.png">
+    <link rel="stylesheet" media="screen" type="text/css" href="SIA%202012-13%20-%20Projet%20Animation_fichiers/kiosk.css">
+    <link rel="stylesheet" media="screen" type="text/css" href="SIA%202012-13%20-%20Projet%20Animation_fichiers/content-kit.css">
+  </head>
+  <body>
+    <div id="content">
+      <h1>Projet 2 : Animation de personnages</h1>
+      <h2>Modalités</h2>
+      <ul>
+        <li>Le projet aura lieu les mardi 8 et mercredi 9 janvier en
+          salle E103.</li>
+        <li>Il sera réalisé par binôme.</li>
+        <li>Il devra fonctionner sur une machine de la salle E103.</li>
+      </ul>
+      <h2>Cahier des charges</h2>
+      <p>L'objectif de ce projet est de réaliser un logiciel
+        d'animation de personnages utilisant les différentes
+        techniques vues pendant les cours. Ce moteur sera
+        implémenté en C++ en utilisant le code
+        développé lors des TPs précédents.</p>
+      <p>Après avoir implémenté une base commune
+        (les fonctionnalités présentées dans les
+        TP1 et TP2 rappelées ci-dessous), vous pourrez choisir
+        d'ajouter d'autres fonctionnalités ou d'améliorer
+        les précédentes. Les méthodes <span class="base">notées ainsi</span> sont les
+        méthodes de base à ajouter obligatoirement, celles
+        <span class="long">notées ainsi</span> peuvent
+        nécessiter un certain temps à mettre en place.</p>
+      <h2>Capture de mouvements</h2>
+      <p>Le programme fourni permet de charger des séquences de
+        capture de mouvements. Nous allons mettre en place plusieurs
+        outils d'analyse et d'utilisation de données de capture
+        de mouvements.</p>
+      <p> </p>
+      <h3>Analyse de données</h3>
+      <p>Etudier les deux séquences de capture de mouvements
+        fournies (marche et course) pour extraire le <span class="base">nombre
+
+
+
+
+
+          de degrés de liberté</span> de chacune des
+        articulations.</p>
+      <h3>Mélange d'animations</h3>
+      <p>Pour le moment, les mouvements possibles du personnage sont
+        limités à ceux capturés. Nous allons mettre
+        en place la possibilité d'utiliser plusieurs
+        séquences de capture de mouvements pour créer un
+        nouveau mouvement.</p>
+      <p>Mettez en place une <span class="base">interpolation
+          linéaire directe</span> entre les deux animations.
+        Ainsi, la valeur d'un degré de liberté de la
+        nouvelle animation sera une combinaison linéaire de ce
+        même degré de liberté dans les deux
+        animations de départ.</p>
+      <p>Une interpolation linéaire de base peut entraîner
+        des problèmes dus à l'asynchronicité des
+        deux mouvements. Mettez en place un <span class="medium">pré-aligement
+
+
+
+
+
+          adéquat</span> des deux animations. On commencera par
+        trouver une frame de départ commune. Certains pourront,
+        comme extension, aligner les deux mouvements en
+        fréquence.</p>
+      <p>Si on a deux squelettes dans leur pose de repos, l'un avec un
+        angle de 180°, l'autre avec un angle de -180° sur le
+        noeud racine, ils sont dans la même position mais le
+        squelette résultant du mélange se retrouve avec un
+        angle de 0° sur le noeud racine et est donc différent
+        des deux squelettes de base. Cela est dû à la
+        non-unicité des angles d'Euler. Pour résoudre ce
+        problème, réaliser une <span class="medium">interpolation
+
+
+
+
+
+          sphérique</span> (slerp, implémentée dans
+        qglviewer) en utilisant une représentationen quaternions
+        des rotations. On montrera sur le résultat cité
+        plus haut le résultat.</p>
+      <p>On pourra étendre le mélange d'animations
+        à <span class="medium"> plus de deux animations</span>.
+        Pour cela et pour tester les méthodes
+        précédentes, on pourra utiliser les
+        séquences de capture de mouvements mises à
+        disposition par CMU et disponibles en format BVH <a href="https://sites.google.com/a/cgspeed.com/cgspeed/motion-capture/cmu-bvh-conversion">ici</a>.</p>
+      <h2>Déformation de surfaces</h2>
+      <p>Une fois la cinématique du squelette d'animation
+        définie, il faut transférer cette animation au
+        modèle visuel du personnage, ici un maillage.</p>
+      <h3>Skinning linéaire</h3>
+      <p>Mettre en place le <span class="base">skinning rigide</span>.
+        Cela signifie que chaque sommet du maillage est influencé
+        par une seule articulation du squelette.</p>
+      <p>Mettre en place le <span class="base">skinning lisse</span>.
+        Pour cela, on pourra implémenter une distance
+        cylindrique, c'est à dire une distance du vertex à
+        l'axe du rigide articulé. Les résultats devraient
+        être comparables à ceux obtenus avec Maya. On
+        pourra étendre la gestion d'évènements
+        quand l'utilisateur appuie sur la touche w pour naviguer entre
+        les différents types de poids.</p>
+      <p>Les poids obtenus jusqu'à présent se basent sur
+        la distance euclidienne, ce qui peut entraîner des
+        problèmes au niveau des jambes par exemple. Calculez des
+        poids basés sur la <span class="long">distance
+          géodésique</span>.</p>
+      <h3>Quaternions duaux</h3>
+      <p>On peut observer des artefacts comme des pincements au niveau
+        des coudes ou des genoux dûs à la
+        non-rigidité des matrices de transformation du skinning
+        linéaire. Une manière de résoudre ces
+        problèmes est d'utiliser les <span class="medium">quaternions
+
+
+
+
+
+          duaux</span>. Après avoir transformé les
+        transformations aux articulations en quaternions duaux, utiliser
+        les quaternions duaux pour calculer les nouvelles positions des
+        sommets lors du skinning. Un bon exemple pour prouver
+        l'efficacité des quaternions duaux est le twist de
+        l'avant-bras. Les détails nécessaires sur le
+        calcul avec quaternions duaux se trouvent dans <a href="http://isg.cs.tcd.ie/kavanl/papers/sdq-tog08.pdf">cet
+          article</a>.</p>
+      <h3>FFD</h3>
+      <p>Pour étudier d'autres types d'animation que les
+        animations par squelette, plongez votre scène dans une
+        grille de contrôle et mettez en place les <span class="long">free-form deformations</span>.</p>
+      <h2>Évaluation</h2>
+      <ul>
+        <li>Le projet sera évalué par une soutenance lors
+          de la séance n°12 du 21/01/2013. </li>
+        <li>Cette soutenance durera 15 min : 10 min de démo /
+          présentation et 5 min de questions. </li>
+        <li>Elle sera réalisée sur une machine de la salle
+          E103.<br>
+        </li>
+      </ul>
+    </div>
+  
+
+</body></html>
