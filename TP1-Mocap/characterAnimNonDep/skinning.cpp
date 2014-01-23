@@ -43,10 +43,19 @@ void Skinning::init() {
 	getBonesPos(_skel, &idx);
 
 	// Compute weights :
-	if (_meth)
-		computeWeights();
-	else
-		loadWeights("data/skinning.txt");
+	switch (_meth) {
+		case 0:
+			loadWeights("data/skinning.txt");
+			break;
+		case 1:
+			computeWeights();
+			break;
+		case 2:
+			computeSmoothWeights();
+			break;
+	}
+
+
 
 	// Test skinning :
 	animate();
@@ -57,12 +66,19 @@ void Skinning::recomputeWeights() {
 	if (_skel==NULL) return;
 
 	// Compute weights :
-	if (_meth) {
-		cout << "computing weights\n";
-		computeWeights();
-	} else {
-		cout << "loading weights\n";
-		loadWeights("data/skinning.txt");
+	switch (_meth) {
+		case 0:
+			cout << "loading weights\n";
+			loadWeights("data/skinning.txt");
+			break;
+		case 1:
+			cout << "computing linear weights\n";
+			computeWeights();
+			break;
+		case 2:
+			cout << "computing smooth weights\n";
+			computeSmoothWeights();
+			break;
 	}
 
 	// Test skinning :
@@ -114,25 +130,99 @@ void Skinning::computeTransfo(Skeleton *skel, int *idx) {
 }
 
 
+void Skinning::computeSmoothWeights() {
+	if (_skin==NULL) return;
+	if (_skel==NULL) return;
+
+	for (unsigned int i = 0; i < _pointsInit.size() ; ++i)
+		for (unsigned int j = 0; j < _posBonesInit.size(); ++j)
+			_weights[i][j] = 0; // initialisation
+
+	for (unsigned int i = 0; i < _pointsInit.size() ; ++i) {
+		int js_min_dist = 0;
+		int jt_min_dist = 0;
+		double ratio;
+		double min_dist = std::numeric_limits<double>::max();
+
+		for (unsigned int j = 0; j < _posBonesInit.size(); ++j) {
+
+			// Deux skeletons S et T
+			// Dot product (SP . ST) * ST = SU
+			// Resultat dans kU
+			glm::vec4 P = _pointsInit[i];
+			glm::vec4 S = _posBonesInit[j];
+			Skeleton *skull = _joints[j];
+			for (unsigned int l = 0; l < skull->_children.size(); ++l) {
+				// skeleton child index recovery
+				std::string jointName = skull->_children[l]->_name;
+				unsigned int idxTskull;
+				for (idxTskull = 0; idxTskull < _joints.size() && _joints[idxTskull]->_name.compare(jointName) != 0; idxTskull++);
+				if (idxTskull == _joints.size() && _joints[idxTskull]->_name.compare(jointName) != 0) {
+					std::cerr << "Warning: Joint " << jointName << " not found" << std::endl;
+					continue;
+				}
+
+				if (i == 0)
+					std::cerr << skull->_name << " [" << j << "] parent de " << l << "e fils " << jointName << " [" << idxTskull << "]" << std::endl;
+
+				// Vectors definition
+				glm::vec4 T = _posBonesInit[idxTskull];
+				glm::vec4 ST = T - S;
+				glm::vec4 SP = P - S;
+
+				// Porjection and coefficient computation
+				double STn = sqrt(ST[0]*ST[0] + ST[1]*ST[1] + ST[2]*ST[2] + ST[3]*ST[3]);
+				glm::vec4 SU = (glm::dot(SP, ST) / (STn * STn)) * ST;
+				double SUn = sqrt(SU[0]*SU[0] + SU[1]*SU[1] + SU[2]*SU[2] + SU[3]*SU[3]);
+				double kU = SUn / STn;
+
+				// Check si entre 0 et 1
+				if (kU < 0 || kU > 1)
+					continue;
+
+				// Pythagore
+				// sqrt ( || SP ||² - || ku * ST ||² ) = dist
+				double SPn = sqrt(SP[0]*SP[0] + SP[1]*SP[1] + SP[2]*SP[2] + SP[3]*SP[3]);
+				double PUdist = sqrt((SPn * SPn) - (SUn * SUn));
+				//double norm_diff = sqrt(diff[0]*diff[0] + diff[1]*diff[1] + diff[2]*diff[2]);
+
+				// Check for min dist
+				if (PUdist < min_dist) {
+					js_min_dist = j;
+					jt_min_dist = l;
+					ratio = kU;
+
+					min_dist = PUdist;
+				}
+			}
+		}
+
+		if (js_min_dist != jt_min_dist) {
+			_weights[i][js_min_dist] = ratio;
+			_weights[i][jt_min_dist] = 1.0 - ratio;
+		}
+	}
+}
+
 void Skinning::computeWeights() {
 	if (_skin==NULL) return;
 	if (_skel==NULL) return;
-	
+
 	for (unsigned int i = 0; i < _pointsInit.size() ; ++i) {
-	  int j_min_dist = -1;
-	  double min_dist = std::numeric_limits<double>::max();
-	  for (unsigned int j = 0; j < _posBonesInit.size(); ++j) {
-	    _weights[i][j] = 0.0; // initialisation
-	    // recherche de max
-	    glm::vec4 diff = (_pointsInit[i] - _posBonesInit[j]);
-	    double norm_diff = sqrt(diff[0]*diff[0] + diff[1]*diff[1] + diff[2]*diff[2]); 
-	    if (norm_diff < min_dist) {
-	      j_min_dist = j;
-	      min_dist = norm_diff;
-	    }
-	    
-	  }
-	  _weights[i][j_min_dist] = 1.0;
+		int j_min_dist = -1;
+		double min_dist = std::numeric_limits<double>::max();
+		for (unsigned int j = 0; j < _posBonesInit.size(); ++j) {
+			_weights[i][j] = 0.0; // initialisation
+			// recherche de max
+			glm::vec4 diff = (_pointsInit[i] - _posBonesInit[j]);
+			double norm_diff = sqrt(diff[0]*diff[0] + diff[1]*diff[1] + diff[2]*diff[2]);
+			if (norm_diff < min_dist) {
+				j_min_dist = j;
+				min_dist = norm_diff;
+			}
+
+		}
+		_weights[i][j_min_dist] = 1.0;
 	}
 }
 
@@ -187,7 +277,7 @@ void Skinning::paintWeights(std::string jointName) {
 	_skin->_colors.clear();
 	for (unsigned int i = 0; i < _skin->_points.size() ; ++i) {
 		double weight = _weights[i][jointIdx];
-		_skin->_colors.push_back(glm::vec4(weight, 0.0, 0.0, 0.9));
+		_skin->_colors.push_back(glm::vec4(0.0, weight, 0.0, 0.9));
 	}
 
 }
@@ -211,12 +301,12 @@ void Skinning::animate() {
 }
 
 void Skinning::applySkinning() {
-  for (unsigned int i = 0; i < _pointsInit.size(); ++i) {
-    glm::vec4 * P = &(_pointsInit[i]);
-    glm::vec4   P_new(0.0,0.0,0.0,0.0);
-    for (unsigned int j = 0; j < _joints.size(); ++j) {
-      P_new += _weights[i][j] * (_transfoCurr[j] * _transfoInitInv[j]) * (*P);
-    }
-    _skin->_points[i] = P_new;
-  }
+	for (unsigned int i = 0; i < _pointsInit.size(); ++i) {
+		glm::vec4 * P = &(_pointsInit[i]);
+		glm::vec4   P_new(0.0,0.0,0.0,0.0);
+		for (unsigned int j = 0; j < _joints.size(); ++j) {
+			P_new += _weights[i][j] * (_transfoCurr[j] * _transfoInitInv[j]) * (*P);
+		}
+		_skin->_points[i] = P_new;
+	}
 }

@@ -8,6 +8,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
 
+#define NB_SKIN_METH 3
+
 class Skinning
 {
 public :
@@ -50,8 +52,9 @@ public :
 	void computeTransfo(Skeleton *skel, int *idx);
 
 	// build _weights :
-	void computeWeights();					// compute from data
-	void loadWeights(std::string filename);	// load from file extracted from Maya
+	void loadWeights(std::string filename); // meth == 0 : load from file extracted from Maya
+	void computeWeights();                  // meth == 1 : compute from data
+	void computeSmoothWeights();            // meth == 2 : compute from data
 	// re-initialize weights :
 	void recomputeWeights();
 
