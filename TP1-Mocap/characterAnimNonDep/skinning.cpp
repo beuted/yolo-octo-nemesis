@@ -58,6 +58,9 @@ void Skinning::init() {
 		case 2:
 			computeRigidCylindricWeights();
 			break;
+		case 4:
+			nullWeights();
+			break;
 	}
 
 
@@ -87,6 +90,10 @@ void Skinning::recomputeWeights() {
 		case 2:
 			cout << "RIGI : Computing rigid weights (Eulerian distance)\n";
 			computeRigidCylindricWeights();
+			break;
+		case 4:
+			nullWeights();
+			cout << "DISA : Disable weights\n";
 			break;
 	}
 
@@ -255,6 +262,17 @@ void Skinning::computeSmoothWeights() {
 			for (unsigned int j = 0; j < NB_COEF_SMOOTH; ++j) {
 				_weights[i][indices[j]] = 1/(coef[j]*coefsum);
 			}
+		}
+	}
+}
+
+void Skinning::nullWeights() {
+	if (_skin==NULL) return;
+	if (_skel==NULL) return;
+
+	for (unsigned int i = 0; i < _pointsInit.size() ; ++i) {
+		for (unsigned int j = 0; j < _posBonesInit.size(); ++j) {
+			_weights[i][j] = 0.0;
 		}
 	}
 }

@@ -8,7 +8,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
 
-#define NB_SKIN_METH 4
+#define NB_SKIN_METH 5
 
 class Skinning
 {
@@ -54,8 +54,9 @@ public :
 	// build _weights :
 	void loadWeights(std::string filename); // meth == 0 : load from file extracted from Maya
 	void computeWeights();                  // meth == 1 : compute from data
-	void computeSmoothWeights();            // meth == 2 : compute from data
-	void computeRigidCylindricWeights();     // meth == 3 : compute from data
+	void computeSmoothWeights();            // meth == 3 : compute from data
+	void computeRigidCylindricWeights();    // meth == 2 : compute from data
+	void nullWeights();                     // meth == 4 : compute from data
 	double cylindricDistance(unsigned int point, unsigned int joint);
 	double euclidianDistance(unsigned int point, unsigned int joint);
 
