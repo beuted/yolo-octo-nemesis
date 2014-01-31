@@ -3,6 +3,8 @@
 #include "skinning.h"
 #include "dosunix_bind.h"
 
+#define NB_COEF_SMOOTH (_posBonesInit.size())
+
 using namespace std;
 
 void Skinning::init() {
@@ -50,10 +52,10 @@ void Skinning::init() {
 		case 1:
 			computeWeights();
 			break;
-		case 2:
+		case 3:
 			computeSmoothWeights();
 			break;
-		case 3:
+		case 2:
 			computeRigidCylindricWeights();
 			break;
 	}
@@ -71,19 +73,19 @@ void Skinning::recomputeWeights() {
 	// Compute weights :
 	switch (_meth) {
 		case 0:
-			cout << "loading weights\n";
+			cout << "LOAD : Loading weights from file\n";
 			loadWeights("data/skinning.txt");
 			break;
 		case 1:
-			cout << "computing linear weights\n";
+			cout << "LINE : Computing linear weights\n";
 			computeWeights();
 			break;
-		case 2:
-			cout << "computing smooth weights\n";
+		case 3:
+			cout << "SMOO : Computing smooth weights (Cylindric OR Eulerian distance) | " << NB_COEF_SMOOTH << " dependencies\n";
 			computeSmoothWeights();
 			break;
-		case 3:
-			cout << "computing rigid weights\n";
+		case 2:
+			cout << "RIGI : Computing rigid weights (Eulerian distance)\n";
 			computeRigidCylindricWeights();
 			break;
 	}
@@ -199,9 +201,8 @@ double Skinning::cylindricDistance(unsigned int point, unsigned int joint) {
 	return PUdist;
 }
 
-#define NB_COEF_SMOOTH 4 //_posBonesInit.size()
 
-int test_and_put(double coef[], double val, unsigned int indices[], unsigned int j) {
+int Skinning::test_and_put(double coef[], double val, unsigned int indices[], unsigned int j) {
 	int imax = 0;
 	double max = coef[0];
 	for (unsigned int i = 0; i < NB_COEF_SMOOTH; i++) {

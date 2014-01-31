@@ -71,6 +71,9 @@ public :
 	// apply skinning to _skel :
 	void applySkinning();
 
+private:
+	int test_and_put(double coef[], double val, unsigned int indices[], unsigned int j);
+
 };
 
 #endif

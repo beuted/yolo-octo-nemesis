@@ -60,17 +60,13 @@ void Mesh::load(const char* fileName) {
 	char *next_token;
 	while(fgets(line, 300, fdat)) {
 		if (line[0]=='#') {
-			//std::cout << "COMMENT :: " << line;
 			continue;
 		}
 		if (strstr(line, "g ")) {
-			//std::cout << "G       :: " << line;
 			continue;
 		} else {
-			//std::cout << "        :: " << line;
 			char* key = strtok_r(line, " \t\n\r", &next_token);
 			if (!key) {
-				//std::cout << "  > Empty" << std::endl;
 				continue;
 			}
 			if (key[0]=='v' && key[1]=='n') {
@@ -82,11 +78,7 @@ void Mesh::load(const char* fileName) {
 				vi.y = (double)atof(valy);
 				vi.z = (double)atof(valz);
 				_normals.push_back(vi);
-				//std::cout << "  > ascii  " << valx << " " << valy << " " << valz << std::endl;
-				//std::cout << "  > double " << x << " " << y << " " << z << std::endl;
-				//std::cout << "  > vector " << vi.x << " " << vi.y << " " << vi.z << std::endl;
 			} else if (key[0]=='v' && key[1]=='t') {
-				//std::cout << "  > vt" << std::endl;
 			} else if (key[0]=='v') {
 				glm::vec4 vi(0,0,0,1);
 				char* valx = strtok_r(NULL, " \t\n\r", &next_token); // update_string(valx);
@@ -96,7 +88,6 @@ void Mesh::load(const char* fileName) {
 				vi.y = (double)atof(valy);
 				vi.z = (double)atof(valz);
 				_points.push_back(vi);
-				//std::cout << "  > autre v " << valx << " " << valy << " " << valz << std::endl;
 			} else if (key[0]=='f') {
 				char* val = strtok_r(NULL, " \t\n\r", &next_token);
 				std::vector<unsigned int> face;
@@ -105,19 +96,15 @@ void Mesh::load(const char* fileName) {
 					if (sscanf_dosunix(val, "%d/%d/%d", iv+0,iv+1,iv+2)==3) {
 						_triangles.push_back(iv[0]-1);
 						face.push_back(iv[0]-1);
-						//std::cout << "  > 3 " << iv[0] << " " << iv[1] << " " << iv[2] << std::endl;
 					} else if (sscanf_dosunix(val, "%d/%d", iv+0,iv+1)==2) {
 						_triangles.push_back(iv[0]-1);
 						face.push_back(iv[0]-1);
-						//std::cout << "  > 2 " << iv[0] << " " << iv[1] << std::endl;
 					} else if (sscanf_dosunix(val, "%d//%d", iv+0,iv+2)==2) {
 						_triangles.push_back(iv[0]-1);
 						face.push_back(iv[0]-1);
-						//std::cout << "  > 2 " << iv[0] << " " << iv[2] << std::endl;
 					} else if (sscanf_dosunix(val, "%d", iv+0)==1) {
 						_triangles.push_back(iv[0]-1);
 						face.push_back(iv[0]-1);
-						//std::cout << "  > 1 " << iv[0] << std::endl;
 					}
 				}
 				_faces.push_back(face);
