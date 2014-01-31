@@ -60,6 +60,7 @@ public :
 	double cylindricDistance(unsigned int point, unsigned int joint);
 	double euclidianDistance(unsigned int point, unsigned int joint);
 
+	void switchDistance();
 
 	// re-initialize weights :
 	void recomputeWeights();
@@ -73,6 +74,7 @@ public :
 	void applySkinning();
 
 private:
+	bool distanceIsCylindric;
 	int test_and_put(double coef[], double val, unsigned int indices[], unsigned int j);
 
 };

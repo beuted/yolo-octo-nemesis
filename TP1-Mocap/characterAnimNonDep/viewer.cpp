@@ -325,6 +325,14 @@ void Viewer::keyPressEvent(QKeyEvent *e)
 			animate();
 			updateGL();
 			break;
+		case Qt::Key_D :		// Modify computation of weights for skinning
+			if (!_skinning) return;
+			_skinning->switchDistance();
+			_skinning->recomputeWeights();
+			if (_skinning->_skin->_colors.size())
+				_skinning->paintWeights(jointNameCol);
+			updateGL();
+			break;
 		case Qt::Key_W :		// Modify computation of weights for skinning
 			if (!_skinning) return;
 			_skinning->_meth = (_skinning->_meth+1)%NB_SKIN_METH;

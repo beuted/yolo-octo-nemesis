@@ -63,10 +63,17 @@ void Skinning::init() {
 			break;
 	}
 
+	// Distance
+	distanceIsCylindric = true;
+
 
 
 	// Test skinning :
 	animate();
+}
+
+void Skinning::switchDistance() {
+	distanceIsCylindric = !distanceIsCylindric;
 }
 
 void Skinning::recomputeWeights() {
@@ -84,11 +91,11 @@ void Skinning::recomputeWeights() {
 			computeWeights();
 			break;
 		case 3:
-			cout << "SMOO : Computing smooth weights (Cylindric OR Eulerian distance) | " << NB_COEF_SMOOTH << " dependencies\n";
+			cout << "SMOO : Computing smooth weights " << (distanceIsCylindric?"CYLINDRIC":"EUCLIDIAN") << " distance | " << NB_COEF_SMOOTH << " dependencies\n";
 			computeSmoothWeights();
 			break;
 		case 2:
-			cout << "RIGI : Computing rigid weights (Eulerian distance)\n";
+			cout << "RIGI : Computing rigid weights (Euclidian distance)\n";
 			computeRigidCylindricWeights();
 			break;
 		case 4:
@@ -249,8 +256,11 @@ void Skinning::computeSmoothWeights() {
 			_weights[i][j] = 0.0;
 			double PUdist;
 
-			//PUdist = 1/exp(-3 * euclidianDistance(i, j));
-			PUdist = 1/exp(-3 * cylindricDistance(i, j));
+			if (distanceIsCylindric) {
+				PUdist = 1/exp(-3 * cylindricDistance(i, j));
+			} else {
+				PUdist = 1/exp(-3 * euclidianDistance(i, j));
+			}
 
 			// Stockage de la distance
 			nbFilled += test_and_put(coef, PUdist, indices, j);
